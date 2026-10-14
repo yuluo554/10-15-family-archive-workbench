@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+build/
+dist/
+*.spec
+.venv/
+venv/
+
+# 环境
+.env
+*.env
+
+# 隐私与本地数据（不入库）
+_private/
+data/raw/
+
+# IDE / 系统
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# 日志与临时
+*.log
+tmp/
+*.tmp

@@ -35,7 +35,15 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--version", action="version", version=famarchive.__version__)
     sub = parser.add_subparsers(dest="command")
 
-    sub.add_parser("import", help="导入本地文件夹/文件为档案项（M2 实装）")
+    p_import = sub.add_parser("import", help="导入本地文件夹/文件为档案项（M2 实装）")
+    p_import.add_argument("path", help="待导入文件或目录")
+    p_import.add_argument("--db", default=None, help="SQLite 库路径（默认 ./archive.sqlite3）")
+    p_import.add_argument(
+        "--media-type",
+        required=True,
+        help="媒体类型（photo-scan/photo-reprint/letter/document/id-card，见 media-type.yaml）",
+    )
+
     sub.add_parser("validate", help="按 DCMI profile 校验著录字段（M3 实装）")
     sub.add_parser("persons", help="人物索引与代际关系（M3 实装）")
     sub.add_parser("timeline", help="家庭年表视图（M3 实装）")
@@ -65,10 +73,39 @@ def _cmd_profile(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_import(args: argparse.Namespace) -> int:
+    from pathlib import Path
+
+    from famarchive.importer import import_directory, import_path
+    from famarchive.store import DuplicateItemError, Store
+
+    db_path = Path(args.db) if args.db else Path("archive.sqlite3")
+    store = Store(db_path)
+    try:
+        target = Path(args.path)
+        if target.is_dir():
+            imported, skipped = import_directory(target, store, media_type=args.media_type)
+        else:
+            try:
+                imported, skipped = [import_path(target, store, media_type=args.media_type)], []
+            except DuplicateItemError as exc:
+                print(f"跳过（重复指纹）: {exc}", file=sys.stderr)
+                return 1
+        for item in imported:
+            print(f"已入库 {item['item_id']}  {item['file_name']}  sha256={item['sha256'][:12]}…")
+        for path, reason in skipped:
+            print(f"跳过 {path}: {reason}", file=sys.stderr)
+        return 0 if imported else 1
+    finally:
+        store.close()
+
+
 def main(argv: list[str] | None = None) -> int:
     _ensure_utf8_stdio()
     parser = build_parser()
     args = parser.parse_args(argv)
+    if args.command == "import":
+        return _cmd_import(args)
     if args.command == "profile":
         if args.profile_command == "show":
             return _cmd_profile(args)

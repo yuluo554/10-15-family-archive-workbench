@@ -31,6 +31,7 @@
 | 2026-10-14 | **M0 骨架部署**：核心库 src 布局 + CLI 双形态入口 + profile v0.1.0-draft + 受控词表占位 + 烟囱测试 7 项全过 + GitHub Actions CI workflow。验证均为**本地等价校验（未接远端，CI 待首推验证）**。开发环境 Python 3.12（本机 3.8 低于要求，3.14 未注册 py 启动器） | 后续 M1 起按 plan/05 执行 |
 | 2026-10-14 | **M0 自查整改（按 ai-tool-project-sprint 纪律）**：① 提交元数据邮箱改写为 GitHub noreply（`git filter-branch --env-filter`，作者/提交者两段独立 if，ae/ce 双字段验证仅剩 noreply；git config 同步；改写前仓外 bundle 备份）；② 补 `.gitattributes`（`* text=auto eol=lf` + 二进制 `-text`，CI 首跑前置工程）；③ CLI 入口加 UTF-8 stdio 守卫 + CI workflow 加 `PYTHONUTF8/PYTHONIOENCODING` env + `fetch-depth: 0`（历史扫描类守门依赖）；④ README 快速开始改为完整 venv 三行（`python -m pip`，py 启动器绕 venv 坑）；⑤ workflow 本地 PyYAML 解析验证（防非法 YAML 0 job 假 CI） | 本地自查整改，未推远端 |
 | 2026-10-14 | **M1 数据先行收尾**：DCMI RDF/页面快照落库 data/raw/dcmi/（官方 GitHub dcmi/vocabtool 镜像，CC-BY 4.0）；dcmi-type.yaml 由脚本从 dctype.ttl 转写（12 词条挂 purl 出处，测试锁定）；openstd 预览逐页图抓取通路实测破解但遭站点级封锁（302 拦截页），GB/T 页图与 PIPL 条文核对转人工跟进。未核对条文一律不进计算路径 | plan/05 M1 DoD 逐项达成 |
+| 2026-10-14 | **M2 导入解析收尾**：store.py SQLite 七表 schema（SHA-256 UNIQUE 约束在库层）+ importer.py 混合媒体同一录入路径（6 扩展名、词表校验 media_type）+ 缩略图（pillow 可选、缺则优雅降级）+ EXIF 仅进建议队列永不写 metadata_fields（K5 测试断言）+ CLI `import` 子命令（文件/目录、重复指纹跳过退出码 1）。pytest 21 项全绿（M2 新增 12 项锁定） | plan/05 M2 DoD 逐项达成 |
 
 ## 承诺-证据台账
 
@@ -49,7 +50,7 @@
 | 里程碑 | 内容 | DoD |
 |---|---|---|
 | M1 数据先行 | DCMI terms/RDF 落库、GB/T 11821 全文获取落地、依据台账三态回填 | 每条引用规则挂原文出处；未核对不落库。**✅ 2026-10-14 完成**（GB/T 页图底稿+PIPL 条文核对为人工跟进项，阻断已如实登记） |
-| M2 导入解析 | 模块 1：混合媒体导入、指纹去重、EXIF 预填 | 无 EXIF 文件走同一路径；断言通过 |
+| M2 导入解析 | 模块 1：混合媒体导入、指纹去重、EXIF 预填 | 无 EXIF 文件走同一路径；断言通过。**✅ 2026-10-14 完成**（21 项测试全绿：重复指纹拒绝、K5 EXIF 只进建议、无 EXIF 同路径、缩略图、批量导入） |
 | M3 著录规则 | 模块 2/3：profile 校验器、录入表单、人物/年表 | 校验规则逐条标出处；profile 版本化 |
 | M4 基准 | 模块 5：合成生成器 + 真值 manifest + 断言（含覆盖度口径） | 断言复跑通过；覆盖各异常类型不偏科 |
 | M5 交付 | 模块 4 导出白名单 + PyInstaller exe + CLI | exe 内全链路可达；导出抹除断言通过 |

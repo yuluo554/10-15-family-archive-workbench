@@ -234,6 +234,32 @@ def _cmd_gui(args: argparse.Namespace) -> int:
     return run_gui(str(_db_path_or_default(args.db)))
 
 
+def _cmd_benchmark(args: argparse.Namespace) -> int:
+    from famarchive.benchmark import run_benchmark
+
+    report = run_benchmark()
+    manifest = report["manifest"]
+    print(f"合成样例基准（manifest v{manifest['manifest_version']}，生成器单一来源）")
+    print(f"假名白名单 {len(manifest['fake_name_whitelist'])} 人名 | "
+          f"证件号占位段 {manifest['placeholders']['id_number'][:6]} | "
+          f"电话假号段 {manifest['placeholders']['phone'][:3]}")
+    print(f"样例 {len(manifest['samples'])} 件：")
+    for s in manifest["samples"]:
+        exp = ",".join(s["expected_errors"]) or "—"
+        print(f"  {s['sample_id']:<18} {s['media_type']:<14} 预期触发: {exp}")
+    print("断言（plan/04 §2 七类异常）：")
+    for row in report["assertions"]:
+        print(f"  [{row['status']}] {row['category']}: {row['detail']}")
+    if not report["passed"]:
+        print("基准断言未全部通过", file=sys.stderr)
+        return 1
+    print("覆盖度口径（写进 manifest，不写硬数字）：")
+    for cat, desc in manifest["coverage"].items():
+        print(f"  {cat}: {desc}")
+    print("基准全部通过")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     _ensure_utf8_stdio()
     parser = build_parser()
@@ -248,6 +274,8 @@ def main(argv: list[str] | None = None) -> int:
         return _cmd_timeline(args)
     if args.command == "gui":
         return _cmd_gui(args)
+    if args.command == "benchmark":
+        return _cmd_benchmark(args)
     if args.command == "profile":
         if args.profile_command == "show":
             return _cmd_profile(args)

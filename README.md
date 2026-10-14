@@ -33,11 +33,11 @@ famarchive profile show             # 查看著录 profile 与规则出处
 
 | 子命令 | 说明 | 状态 |
 |---|---|---|
-| `import` | 混合媒体导入 | 开发中（M2） |
-| `validate` | 著录字段校验 | 开发中（M3） |
-| `persons` / `timeline` | 人物与年表 | 开发中（M3） |
+| `import` | 混合媒体导入 | ✅（M2） |
+| `validate` | 著录字段校验 | ✅（M3） |
+| `persons` / `timeline` | 人物与年表 | ✅（M3） |
+| `benchmark` | 合成样例基准断言复跑 | ✅（M4） |
 | `search` / `export` | 检索与白名单导出 | 开发中（M5） |
-| `benchmark` | 基准断言复跑 | 开发中（M4） |
 | `profile show` | profile 版本与规则出处 | ✅ |
 
 ## 仓库结构

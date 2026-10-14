@@ -33,6 +33,7 @@
 | 2026-10-14 | **M1 数据先行收尾**：DCMI RDF/页面快照落库 data/raw/dcmi/（官方 GitHub dcmi/vocabtool 镜像，CC-BY 4.0）；dcmi-type.yaml 由脚本从 dctype.ttl 转写（12 词条挂 purl 出处，测试锁定）；openstd 预览逐页图抓取通路实测破解但遭站点级封锁（302 拦截页），GB/T 页图与 PIPL 条文核对转人工跟进。未核对条文一律不进计算路径 | plan/05 M1 DoD 逐项达成 |
 | 2026-10-14 | **M2 导入解析收尾**：store.py SQLite 七表 schema（SHA-256 UNIQUE 约束在库层）+ importer.py 混合媒体同一录入路径（6 扩展名、词表校验 media_type）+ 缩略图（pillow 可选、缺则优雅降级）+ EXIF 仅进建议队列永不写 metadata_fields（K5 测试断言）+ CLI `import` 子命令（文件/目录、重复指纹跳过退出码 1）。pytest 21 项全绿（M2 新增 12 项锁定） | plan/05 M2 DoD 逐项达成 |
 | 2026-10-14 | **M3 著录规则与人物收尾**：validator.py profile 驱动三类规则（required/vocabulary/format-W3CDTF 含日历语义检查），结果逐条挂出处；persons.py 关系边限词表+同名仅报告不自动合并（合并走显式 confirm_same_name_merge）；年表只收编目完成项；GUI 三页实装（编目/人物/年表，PySide6 可选依赖，offscreen 全链路冒烟通过）；profile v0.2.0（description/coverage 提必填）与 v0.1.0 实质可区分，旧版留档 archived/。pytest 34 项全绿（M3 新增 13 项） | plan/05 M3 DoD 逐项达成 |
+| 2026-10-14 | **M4 基准收尾**：benchmark.py 合成样例生成器（人名只取假名白名单词表文件、证件号 999999 段/电话 199 段占位段从词表文件读取）+ 真值 manifest 单一来源（expected_errors 与 planted_fields 同源生成）+ plan/04 §2 七类异常断言全覆盖（敏感抹除以"键不出现"口径锁定）+ CLI benchmark 子命令；覆盖度口径按异常类型写进 manifest 不写硬数字。pytest 47 项全绿（M4 新增 13 项），famarchive benchmark 复跑全绿 | plan/05 M4 DoD 逐项达成 |
 
 ## 承诺-证据台账
 
@@ -53,6 +54,6 @@
 | M1 数据先行 | DCMI terms/RDF 落库、GB/T 11821 全文获取落地、依据台账三态回填 | 每条引用规则挂原文出处；未核对不落库。**✅ 2026-10-14 完成**（GB/T 页图底稿+PIPL 条文核对为人工跟进项，阻断已如实登记） |
 | M2 导入解析 | 模块 1：混合媒体导入、指纹去重、EXIF 预填 | 无 EXIF 文件走同一路径；断言通过。**✅ 2026-10-14 完成**（21 项测试全绿：重复指纹拒绝、K5 EXIF 只进建议、无 EXIF 同路径、缩略图、批量导入） |
 | M3 著录规则 | 模块 2/3：profile 校验器、录入表单、人物/年表 | 校验规则逐条标出处；profile 版本化。**✅ 2026-10-14 完成**（34 项测试全绿：三类规则逐条出处、W3CDTF、同名不自动合并、年表拦截未编目项、v0.2.0↔v0.1.0 必填集实质可区分；CLI+GUI 三页端到端冒烟通过） |
-| M4 基准 | 模块 5：合成生成器 + 真值 manifest + 断言（含覆盖度口径） | 断言复跑通过；覆盖各异常类型不偏科 |
+| M4 基准 | 模块 5：合成生成器 + 真值 manifest + 断言（含覆盖度口径） | 断言复跑通过；覆盖各异常类型不偏科。**✅ 2026-10-14 完成**（47 项测试全绿：生成器假名/占位段纪律、真值单一来源、七类异常逐类断言、覆盖度口径进 manifest；`famarchive benchmark` 复跑全绿） |
 | M5 交付 | 模块 4 导出白名单 + PyInstaller exe + CLI | exe 内全链路可达；导出抹除断言通过 |
 | M6 发布 | 发布 GitHub 公开仓库 | **三件套：git tag + GitHub Release 附产物（本地留副本 sha256 留档）+ plan/RELEASE-M6.md 发布留档**，缺任一即未达成 |

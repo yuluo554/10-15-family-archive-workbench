@@ -31,3 +31,6 @@ Thumbs.db
 *.log
 tmp/
 *.tmp
+
+# 发布产物本地副本（exe zip 不入 git，走 GitHub Release 附产物）
+dist-release/

@@ -1,17 +1,26 @@
 # data/README.md — 依据查证记录与数据纪律
 
-基准日：**2026-10-14**。三态标记：✅ 已核对（附渠道）/ ⬜ 待核对（登记获取路径与阻断原因）/ 不可获取（不得作底座）。
+基准日：**2026-10-14**（M1 回填：2026-10-14）。三态标记：✅ 已核对（附渠道）/ ⬜ 待核对（登记获取路径与阻断原因）/ 不可获取（不得作底座）。
 
 ## 一、依据查证记录
 
 | # | 依据 | 版本/文号 | 状态 | 渠道 / 阻断原因 |
 |---|---|---|---|---|
-| 1 | DCMI Metadata Terms（15 核心元素 + ~55 terms + DCMI Type 词汇 + W3CDTF 语法编码方案） | 2020-01-20 版（对应 ISO 15836-1:2017 / ISO 15836-2:2019） | ✅ 页面与机器可读 RDF（dublin_core_terms.nt）直连可得；必填集/受控词表为**项目自建 profile**，非标准原文规定 | https://www.dublincore.org/specifications/dublin-core/dcmi-terms/ |
+| 1 | DCMI Metadata Terms（15 核心元素 + ~55 terms + DCMI Type 词汇 + W3CDTF 语法编码方案） | 2020-01-20 版（对应 ISO 15836-1:2017 / ISO 15836-2:2019） | ✅ **M1 已落库**：`data/raw/dcmi/` 存官方 RDF（dublin_core_terms.nt/.ttl、dctype.ttl/.rdf）+ HTML 页面快照；DCMI Type 12 词条由 `scripts/extract_dcmi_type.py` 脚本转写进 `data/vocabularies/dcmi-type.yaml`（每词条挂 purl 出处）；**许可：DCMI 文档 CC-BY 4.0**（dublincore.org/about/copyright/）。dctype.ttl 取自 DCMI 官方 GitHub `dcmi/vocabtool` build/dctype.ttl（namespace modified 2012-06-14） | https://www.dublincore.org/specifications/dublin-core/dcmi-terms/ |
 | 2 | EXIF 版本差异素材（3.0 新增 UTF-8 文本标签、清理废弃 tag、修订镜头 tag；版本序列 2.3(2010)/2.32(2019)/3.0(2023)） | CIPA DC-008 | ✅ 差异素材已核 / ⬜ **规范 PDF 脚本化直连下载受阻**：CIPA 官网下载为 POST 表单，脚本返回 0 字节（反爬/表单校验）。获取路径：浏览器一次手动下载存入 data/raw/cipa/，落地后录入 | CIPA 官网 |
-| 3 | 《照片档案管理规范》（照片号编号规则、文字说明四要素：事由/时间/地点/人物） | GB/T 11821-2002 | ✅ 收录且标注公开，在线预览可得 / ⬜ 机器直连抓全文受限（预览通道非静态全文页）。获取路径：openstd 详情页预览落地后录入 | https://openstd.samr.gov.cn/bzgk/std/newGbInfo?hcno=6274733E32F53D7C89E868771A13748C |
+| 3 | 《照片档案管理规范》（照片号编号规则、文字说明四要素：事由/时间/地点/人物） | GB/T 11821-2002 | 🔄 **M1 通路打通后遭站点级封锁（2026-10-14 晚）**：openstd 在线预览逐页图抓取通路已实测破解（WebP 页图 + showGb 须带 newGbInfo Referer + 会话 cookie + 每页独立令牌，`scripts/fetch_gbt11821.py`）；但高频请求触发服务端**站点级封锁**——现 showGb 请求被 302 重定向至网信办《个人信息保护合规审计管理办法》新闻页（拦截页，非限流冷却可恢复）。处置：页面图仅作人工核对底稿（不 OCR），条文引用走浏览器人工核对后挂条款号；脚本与通路破解记录保留，供封锁解除或换网络环境后复用 | https://openstd.samr.gov.cn/bzgk/std/newGbInfo?hcno=6274733E32F53D7C89E868771A13748C |
 | 4 | 《照片类电子档案元数据方案》《数码照片归档与管理规范》 | DA/T 54-2014、DA/T 50-2014 | ⬜ **DA/T 行业标准全文不公开**：hbba.sacinfo.org.cn 仅备案记录，API 实测可查记录、无全文 → **降级为参考设计，不作底座**。事实纠正：DA/T 48-2009 实为《基于XML的电子文件封装规范》，非照片元数据标准 | 全国标准信息服务平台 |
-| 5 | 《个人信息保护法》第 6 条（最小必要）/ 第 28 条（敏感个人信息含生物识别）/ 第 29 条（单独同意） | PIPL | ⬜ 条文表述待以国家法律法规数据库核对；核对前仅作设计取向（默认关闭识别、导出抹敏感字段），不引用条文原文 | 国家法律法规数据库 |
+| 5 | 《个人信息保护法》第 6 条（最小必要）/ 第 28 条（敏感个人信息含生物识别）/ 第 29 条（单独同意） | PIPL | ⬜ **M1 实测仍阻断**：国家法律法规数据库（flk.npc.gov.cn）前端 API 实测——检索接口 `/law-search/search/list` 等返回"系统异常"，验证码接口确认会话须先过**人机验证码**，无头脚本化核对不可行；gov.cn 转载页 404、npc.gov.cn 原文页 302 回首页。获取路径：浏览器人工打开 flk.npc.gov.cn 检索"个人信息保护法"逐条核对第 6/28/29 条后回填本表。核对前维持既定口径：仅作设计取向（默认关闭识别、导出抹敏感字段），不引用条文原文 | 国家法律法规数据库 |
 | 6 | 开源空白论据（软论据） | — | ⬜ 定性：检索式 = GitHub 搜 "photo metadata catalog / 家庭档案 / 老照片 管理 / exif-only organizer"，基准日 2026-10-14。Immich ~116k★、PhotoPrism ~40k★、elodie ~1.5k★、may3rr/dingying ~1★。无入库截图，仅作辅助论据不与硬锚点并列 | GitHub 检索 |
+
+### M1 落库快照清单（data/raw/，公开参考资料、无隐私内容，.gitignore 例外出库）
+
+| 文件 | 内容 | 来源 | 许可 |
+|---|---|---|---|
+| `raw/dcmi/dublin_core_terms.nt` / `.ttl` | DCMI Metadata Terms 官方 RDF（N-Triples / Turtle） | dublincore.org 官方下载；.ttl 镜像自 DCMI 官方 GitHub `dcmi/vocabtool` build/ | CC-BY 4.0（DCMI 文档许可） |
+| `raw/dcmi/dctype.ttl` / `.rdf` | DCMI Type Vocabulary 官方 RDF（12 词条，namespace modified 2012-06-14） | DCMI 官方 GitHub `dcmi/vocabtool` build/ | CC-BY 4.0 |
+| `raw/dcmi/dcmi-terms-page.html` / `dcmi-type-vocabulary-page.html` | 官方规范页 HTML 快照（2026-10-14 抓取） | dublincore.org | CC-BY 4.0 |
+| `raw/gbt11821/page-*.webp` | GB/T 11821-2002 在线预览逐页图（人工核对底稿，不进计算路径） | openstd.samr.gov.cn 在线预览（脚本 `scripts/fetch_gbt11821.py`） | 标准文本版权归国家标准化管理委员会；仅落预览底稿作核对用 |
 
 **可参数化规则预检备注**：GB/T 11821-2002 可抽出规则约 10 条内（预检⑤边缘）→ 属性为"编目参考规则"，不独撑亮点模块；DCMI profile 的必填集/词表/W3CDTF 校验为项目自建、可参数化、版本化，是可复现校验的核心。
 
@@ -19,11 +28,11 @@
 
 | 数据源 | 可获取性 | 处置 |
 |---|---|---|
-| DCMI terms 页面/RDF | ✅ 可直连可解析 | 字段体系底座 |
+| DCMI terms 页面/RDF | ✅ 已落库（data/raw/dcmi/） | 字段体系底座；dcmi-type.yaml 脚本转写自 dctype.ttl |
 | CIPA EXIF 规范 PDF | ⬜ 阻断（POST 0 字节） | 手动下载落地后录入；未落地不进计算路径 |
-| GB/T 11821-2002 全文 | ⬜ 阻断（预览非静态全文） | 预览人工落地后录入 |
+| GB/T 11821-2002 全文 | 🔄 预览逐页图抓取通路已破解，但站点级封锁生效（302 至 CAC 新闻页拦截）；转人工核对 | 页面图仅作核对底稿；封锁解除后 `scripts/fetch_gbt11821.py` 可复用 |
 | DA/T 54-2014 / 50-2014 全文 | 不可获取 | 降级参考设计，仅备案记录引用 |
-| PIPL 条文 | ⬜ 待核对 | 国家法律法规数据库核对后落库 |
+| PIPL 条文 | ⬜ 阻断（flk 人机验证码，无头脚本不可行） | 浏览器人工核对后回填；核对前不引用条文原文 |
 
 ## 三、合成数据纪律与假名白名单
 
@@ -33,9 +42,9 @@
 - 基准覆盖度口径（写入 manifest，不写硬数字）：必填缺失、词表外取值、W3CDTF 非法日期、敏感字段抹除、人物关系各类异常类型**每类至少有代表性用例**，防真值偏科。
 - 数值口径一处定义：所有阈值/口径只在生成器或 profile 的数据字段中定义一次，文档引用不另写第二表述；不写随实现漂移的硬数字，数值以末态回填。
 
-## 四、待落地清单（M1）
+## 四、待落地清单（M1 收尾状态，2026-10-14）
 
-1. CIPA EXIF 2.32/3.0 PDF 手动下载 → data/raw/cipa/，对照条目挂原文；
-2. GB/T 11821-2002 全文（预览逐条人工落地）→ data/raw/gbt11821/，规则挂条款；
-3. PIPL 第 6/28/29 条以国家法律法规数据库核对 → 回填台账；
-4. DCMI RDF 落库为字段定义素材 → data/raw/dcmi/。
+1. ~~DCMI RDF 落库~~ ✅ 完成（data/raw/dcmi/ + dcmi-type.yaml 脚本转写）；
+2. ~~GB/T 11821-2002 预览抓取~~ 🔄 通路已破解但站点级封锁生效（302 至 CAC 新闻页拦截页），转人工核对（不阻断后续里程碑）；脚本留档复用；
+3. PIPL 第 6/28/29 条 ⬜ flk 人机验证码阻断，转人工核对（不阻断后续里程碑）；
+4. CIPA EXIF 2.32/3.0 PDF ⬜ 维持手动下载路径（M1 范围外，不阻断）。

@@ -16,7 +16,10 @@ venv/
 
 # 隐私与本地数据（不入库）
 _private/
-data/raw/
+data/raw/*
+# M1 例外：DCMI 公开参考快照（官方 RDF/HTML，无隐私内容），按台账入库
+!data/raw/dcmi/
+!data/raw/dcmi/**
 
 # IDE / 系统
 .idea/

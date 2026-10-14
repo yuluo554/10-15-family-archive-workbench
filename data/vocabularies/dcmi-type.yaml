@@ -1,0 +1,66 @@
+vocabulary_id: dcmi-type
+title: DCMI Type 受控词表（脚本转写）
+version: '2012-06-14'
+source_document: data/raw/dcmi/dctype.ttl（DCMI 官方 GitHub dcmi/vocabtool build/dctype.ttl）
+provenance_note: 本文件由 scripts/extract_dcmi_type.py 从 dctype.ttl 程序化生成，禁手抄；改动须改脚本重跑
+values:
+- id: Collection
+  label: Collection
+  definition: An aggregation of resources.
+  source: DCMI Type Vocabulary <http://purl.org/dc/dcmitype/Collection>（issued 2000-07-11，modified 2008-01-14，history
+    http://dublincore.org/usage/terms/history/#Collection-003；转写自 data/raw/dcmi/dctype.ttl）
+- id: Dataset
+  label: Dataset
+  definition: Data encoded in a defined structure.
+  source: DCMI Type Vocabulary <http://purl.org/dc/dcmitype/Dataset>（issued 2000-07-11，modified 2008-01-14，history
+    http://dublincore.org/usage/terms/history/#Dataset-003；转写自 data/raw/dcmi/dctype.ttl）
+- id: Event
+  label: Event
+  definition: A non-persistent, time-based occurrence.
+  source: DCMI Type Vocabulary <http://purl.org/dc/dcmitype/Event>（issued 2000-07-11，modified 2008-01-14，history
+    http://dublincore.org/usage/terms/history/#Event-003；转写自 data/raw/dcmi/dctype.ttl）
+- id: Image
+  label: Image
+  definition: A visual representation other than text.
+  source: DCMI Type Vocabulary <http://purl.org/dc/dcmitype/Image>（issued 2000-07-11，modified 2008-01-14，history
+    http://dublincore.org/usage/terms/history/#Image-004；转写自 data/raw/dcmi/dctype.ttl）
+- id: InteractiveResource
+  label: Interactive Resource
+  definition: A resource requiring interaction from the user to be understood, executed, or experienced.
+  source: DCMI Type Vocabulary <http://purl.org/dc/dcmitype/InteractiveResource>（issued 2000-07-11，modified
+    2008-01-14，history http://dublincore.org/usage/terms/history/#InteractiveResource-003；转写自 data/raw/dcmi/dctype.ttl）
+- id: MovingImage
+  label: Moving Image
+  definition: A series of visual representations imparting an impression of motion when shown in succession.
+  source: DCMI Type Vocabulary <http://purl.org/dc/dcmitype/MovingImage>（issued 2003-11-18，modified 2008-01-14，history
+    http://dublincore.org/usage/terms/history/#MovingImage-003；转写自 data/raw/dcmi/dctype.ttl）
+- id: PhysicalObject
+  label: Physical Object
+  definition: An inanimate, three-dimensional object or substance.
+  source: DCMI Type Vocabulary <http://purl.org/dc/dcmitype/PhysicalObject>（issued 2002-07-13，modified
+    2008-01-14，history http://dublincore.org/usage/terms/history/#PhysicalObject-003；转写自 data/raw/dcmi/dctype.ttl）
+- id: Service
+  label: Service
+  definition: A system that provides one or more functions.
+  source: DCMI Type Vocabulary <http://purl.org/dc/dcmitype/Service>（issued 2000-07-11，modified 2008-01-14，history
+    http://dublincore.org/usage/terms/history/#Service-003；转写自 data/raw/dcmi/dctype.ttl）
+- id: Software
+  label: Software
+  definition: A computer program in source or compiled form.
+  source: DCMI Type Vocabulary <http://purl.org/dc/dcmitype/Software>（issued 2000-07-11，modified 2008-01-14，history
+    http://dublincore.org/usage/terms/history/#Software-003；转写自 data/raw/dcmi/dctype.ttl）
+- id: Sound
+  label: Sound
+  definition: A resource primarily intended to be heard.
+  source: DCMI Type Vocabulary <http://purl.org/dc/dcmitype/Sound>（issued 2000-07-11，modified 2008-01-14，history
+    http://dublincore.org/usage/terms/history/#Sound-003；转写自 data/raw/dcmi/dctype.ttl）
+- id: StillImage
+  label: Still Image
+  definition: A static visual representation.
+  source: DCMI Type Vocabulary <http://purl.org/dc/dcmitype/StillImage>（issued 2003-11-18，modified 2008-01-14，history
+    http://dublincore.org/usage/terms/history/#StillImage-003；转写自 data/raw/dcmi/dctype.ttl）
+- id: Text
+  label: Text
+  definition: A resource consisting primarily of words for reading.
+  source: DCMI Type Vocabulary <http://purl.org/dc/dcmitype/Text>（issued 2000-07-11，modified 2008-01-14，history
+    http://dublincore.org/usage/terms/history/#Text-003；转写自 data/raw/dcmi/dctype.ttl）

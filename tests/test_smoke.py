@@ -66,6 +66,39 @@ def test_vocabularies_parse():
     assert "title" in whitelist["export_fields"]
 
 
+def test_dcmi_type_vocabulary_extracted_with_sources():
+    """M1：dcmi-type.yaml 由脚本转写生成，12 词条全带 DCMI 出处（plan/05 M1 DoD）。"""
+    path = REPO_DATA / "vocabularies" / "dcmi-type.yaml"
+    assert path.exists(), "dcmi-type.yaml 未生成：跑 scripts/extract_dcmi_type.py"
+    doc = yaml.safe_load(path.read_text(encoding="utf-8"))
+    assert doc["vocabulary_id"] == "dcmi-type"
+    assert doc["source_document"].startswith("data/raw/dcmi/")
+    values = doc["values"]
+    assert len(values) == 12
+    for v in values:
+        assert v["id"] and v["label"] and v["definition"]
+        assert "http://purl.org/dc/dcmitype/" in v["source"], f"{v['id']} 缺 DCMI 出处"
+    assert {v["id"] for v in values} == {
+        "Collection", "Dataset", "Event", "Image", "InteractiveResource",
+        "MovingImage", "PhysicalObject", "Service", "Software", "Sound",
+        "StillImage", "Text",
+    }
+
+
+def test_dcmi_raw_snapshot_registered():
+    """M1：DCMI 快照落库（HTML 页面 + RDF），来源/许可登记进 data/README.md。
+
+    data/raw/dcmi/ 在 .gitignore 例外中入库（公开参考资料，非隐私数据）。
+    """
+    raw = REPO_DATA / "raw" / "dcmi"
+    for name in ("dublin_core_terms.nt", "dublin_core_terms.ttl", "dctype.ttl", "dctype.rdf"):
+        f = raw / name
+        assert f.exists() and f.stat().st_size > 0, f"{name} 未落库"
+    readme = (REPO_DATA / "README.md").read_text(encoding="utf-8")
+    assert "dcmi/vocabtool" in readme, "data/README.md 未登记 DCMI 快照来源"
+    assert "CC-BY" in readme, "data/README.md 未登记 DCMI 许可"
+
+
 def test_resources_dirs_exist():
     assert resources.profiles_dir().exists()
     assert resources.vocabularies_dir().exists()

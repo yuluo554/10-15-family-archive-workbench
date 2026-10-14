@@ -12,7 +12,8 @@
 家庭档案的主食恰是无 EXIF 的扫描件。本工具以人工编目为核心：
 
 - **混合媒体导入**：照片扫描件/翻拍/家书/文献/证件同一录入路径；EXIF 仅作预填建议，永不自动写入；SHA-256 指纹防重复入库；
-- **DCMI-based 著录 profile**（核心）：字段定义、必填集、受控词表、W3CDTF 日期校验全部以数据文件定义，逐条规则标注出处，profile 带版本号可版本化；
+# DCMI-based 著录 profile（核心）：字段定义、必填集、受控词表、W3CDTF 日期校验全部以数据文件定义，逐条规则标注出处，profile 带版本号可版本化；
+
 - **人物与家庭年表**：代际关系边（受控词表）、同名人工确认合并、按编目时间轴生成年表；
 - **白名单导出**：默认抹除 GPS/证件号类敏感字段（抹除 = 不出现，非置空），导出包附 manifest；
 - **内置基准**：合成样例带真值（假名白名单），断言可复跑。
@@ -20,13 +21,15 @@
 ## 快速开始
 
 ```bash
-pip install -e .            # 核心（CLI + 校验 + 基准）
-pip install -e .[dev]       # + 测试
-pip install -e .[gui]       # + PySide6 桌面界面（开发中）
-pytest                      # 烟囱 + 基准断言
-famarchive --help           # CLI
-famarchive profile show     # 查看著录 profile 与规则出处
+py -m venv .venv                    # Windows；其他系统 python3 -m venv .venv
+.venv/Scripts/activate              # Windows Git Bash；cmd 用 activate.bat
+python -m pip install -e .[dev]     # 核心 + 测试（venv 内用 python，别用 py——py 启动器会绕过 venv）
+pytest                              # 烟囱 + 基准断言
+famarchive --help                   # CLI
+famarchive profile show             # 查看著录 profile 与规则出处
 ```
+
+可选 extras：`.[gui]` PySide6 桌面界面（开发中）、`.[pack]` PyInstaller 打包、`.[exif]` EXIF 辅助预填。
 
 | 子命令 | 说明 | 状态 |
 |---|---|---|

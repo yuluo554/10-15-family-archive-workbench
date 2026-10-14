@@ -13,6 +13,20 @@ import famarchive
 from famarchive.profile import load_profile
 
 
+def _ensure_utf8_stdio() -> None:
+    """非 UTF-8 管道（如 Windows cp1252）下打印中文前重配 stdio。
+
+    本机中文控制台 cp936 保持不动；仅探测到非 UTF-8 且支持 reconfigure 时切换。
+    """
+    for stream in (sys.stdout, sys.stderr):
+        encoding = getattr(stream, "encoding", "") or ""
+        if encoding.lower().replace("-", "") not in ("utf8", "utf8mb4"):
+            try:
+                stream.reconfigure(encoding="utf-8")
+            except (AttributeError, OSError):
+                pass
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="famarchive",
@@ -52,6 +66,7 @@ def _cmd_profile(args: argparse.Namespace) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
+    _ensure_utf8_stdio()
     parser = build_parser()
     args = parser.parse_args(argv)
     if args.command == "profile":

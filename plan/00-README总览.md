@@ -28,7 +28,8 @@
 | 2026-10-14 | **GB/T 11821-2002 降级为"编目参考规则"** | 预检⑤边缘：可参数化规则约 10 条内（照片号编号规则、文字说明四要素），不足以独撑亮点模块；作模块 2 校验器的参考规则来源。在线预览可得但机器直连抓全文受限（⬜），全文落地后录入，未落地不进入计算路径。 |
 | 2026-10-14 | **EXIF 对照包降为扩展项** | 差异素材已核（✅），但 CIPA 规范 PDF 脚本直连下载受阻（POST 返回 0 字节）→ 原文需手动下载落地后录入，录入前不进计算路径。 |
 | 2026-10-14 | 仓库命名 `10-15-family-archive-workbench`（日期标签目录命名约定，无改名事件） | — |
-| 2026-10-14 | **M0 骨架部署**：核心库 src 布局 + CLI 双形态入口 + profile v0.1.0-draft + 受控词表占位 + 烟囱测试 7 项全过 + GitHub Actions CI。开发环境 Python 3.12（本机 3.8 低于要求，3.14 未注册 py 启动器） | 后续 M1 起按 plan/05 执行 |
+| 2026-10-14 | **M0 骨架部署**：核心库 src 布局 + CLI 双形态入口 + profile v0.1.0-draft + 受控词表占位 + 烟囱测试 7 项全过 + GitHub Actions CI workflow。验证均为**本地等价校验（未接远端，CI 待首推验证）**。开发环境 Python 3.12（本机 3.8 低于要求，3.14 未注册 py 启动器） | 后续 M1 起按 plan/05 执行 |
+| 2026-10-14 | **M0 自查整改（按 ai-tool-project-sprint 纪律）**：① 提交元数据邮箱改写为 GitHub noreply（`git filter-branch --env-filter`，作者/提交者两段独立 if，ae/ce 双字段验证仅剩 noreply；git config 同步；改写前仓外 bundle 备份）；② 补 `.gitattributes`（`* text=auto eol=lf` + 二进制 `-text`，CI 首跑前置工程）；③ CLI 入口加 UTF-8 stdio 守卫 + CI workflow 加 `PYTHONUTF8/PYTHONIOENCODING` env + `fetch-depth: 0`（历史扫描类守门依赖）；④ README 快速开始改为完整 venv 三行（`python -m pip`，py 启动器绕 venv 坑）；⑤ workflow 本地 PyYAML 解析验证（防非法 YAML 0 job 假 CI） | 本地自查整改，未推远端 |
 
 ## 承诺-证据台账
 

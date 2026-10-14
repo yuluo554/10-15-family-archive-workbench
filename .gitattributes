@@ -1,0 +1,12 @@
+# 源码行尾归一（LF），防 Windows autocrlf 把全新 clone 重写成 CRLF
+* text=auto eol=lf
+
+# 二进制/快照类：禁 EOL 改写，保 sha256 稳定（标准原文快照落地后按台账登记扩展名追加）
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.tif binary
+*.tiff binary
+*.pdf binary
+*.sqlite3 binary
+*.exe binary

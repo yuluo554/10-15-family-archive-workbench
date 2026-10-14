@@ -1,0 +1,14 @@
+# 人物关系边类型受控词表 — 模块 3 引用
+# v0.1.0-draft
+values:
+  - id: parent-child
+    label: 父子/母子
+  - id: spouse
+    label: 夫妻
+  - id: grandparent-grandchild
+    label: 祖孙
+  - id: sibling
+    label: 兄弟姐妹
+  - id: other
+    label: 其他
+source: 项目自建（data/README.md 台账；扩展需改词表文件并升 profile 版本）

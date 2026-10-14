@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "famarchive"
+version = "0.1.0.dev0"
+description = "老照片/家庭档案数字化整理工作台 —— 人工元数据编目优先，DCMI-based 字段体系，纯本地单机零上传"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+authors = [{ name = "yuluo554" }]
+keywords = ["family-archive", "dublin-core", "metadata", "cataloging", "photo-archive"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "Intended Audience :: End Users/Desktop",
+  "Natural Language :: Chinese (Simplified)",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3.10",
+  "Topic :: Multimedia :: Graphics",
+]
+dependencies = [
+  "PyYAML>=6.0",
+]
+
+[project.optional-dependencies]
+# EXIF 辅助预填与缩略图（缺失则跳过预填，功能不受阻）
+exif = ["pillow>=10.0"]
+# PySide6 桌面 GUI（模块 2/3/4 录入表单、人物图、年表、检索、导出页）
+gui = ["PySide6>=6.6"]
+# PyInstaller 打包 Windows exe
+pack = ["pyinstaller>=6.0"]
+dev = ["pytest>=8.0"]
+
+[project.scripts]
+famarchive = "famarchive.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+famarchive = ["data/**/*.yaml"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

@@ -1,0 +1,20 @@
+# 导出字段白名单 — 模块 4 引用（可审、可版本化）
+# 纪律：白名单外字段在导出文件中不出现（非置空）；manifest 记录本文件版本。
+# v0.1.0-draft
+version: 0.1.0-draft
+export_fields:
+  - title
+  - date
+  - description
+  - type
+  - subject
+  - coverage
+  - language
+  - rights
+sensitive_fields:
+  # 默认抹除：GPS、证件号类。抹除 = 不出现。
+  - gps
+  - id-number
+  - phone
+  - biometric
+note: 白名单变更需升版本并写入导出 manifest

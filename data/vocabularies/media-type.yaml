@@ -1,0 +1,19 @@
+# 媒体类型受控词表 — 模块 1/2 引用
+# 招牌差异：type 取值面向家庭混合档案，非 DCMI Type 原词直接采用处见 source。
+# v0.1.0-draft
+values:
+  - id: photo-scan
+    label: 照片扫描件
+    source: 项目自建（家庭档案混合媒体分类）
+  - id: photo-reprint
+    label: 翻拍照片
+    source: 项目自建（家庭档案混合媒体分类）
+  - id: letter
+    label: 家书/信函
+    source: 项目自建（家庭档案混合媒体分类）
+  - id: document
+    label: 文献/文书扫描页
+    source: 项目自建（家庭档案混合媒体分类）
+  - id: id-card
+    label: 证件扫描页
+    source: 项目自建（家庭档案混合媒体分类；导出默认敏感）

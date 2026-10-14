@@ -34,6 +34,7 @@
 | 2026-10-14 | **M2 导入解析收尾**：store.py SQLite 七表 schema（SHA-256 UNIQUE 约束在库层）+ importer.py 混合媒体同一录入路径（6 扩展名、词表校验 media_type）+ 缩略图（pillow 可选、缺则优雅降级）+ EXIF 仅进建议队列永不写 metadata_fields（K5 测试断言）+ CLI `import` 子命令（文件/目录、重复指纹跳过退出码 1）。pytest 21 项全绿（M2 新增 12 项锁定） | plan/05 M2 DoD 逐项达成 |
 | 2026-10-14 | **M3 著录规则与人物收尾**：validator.py profile 驱动三类规则（required/vocabulary/format-W3CDTF 含日历语义检查），结果逐条挂出处；persons.py 关系边限词表+同名仅报告不自动合并（合并走显式 confirm_same_name_merge）；年表只收编目完成项；GUI 三页实装（编目/人物/年表，PySide6 可选依赖，offscreen 全链路冒烟通过）；profile v0.2.0（description/coverage 提必填）与 v0.1.0 实质可区分，旧版留档 archived/。pytest 34 项全绿（M3 新增 13 项） | plan/05 M3 DoD 逐项达成 |
 | 2026-10-14 | **M4 基准收尾**：benchmark.py 合成样例生成器（人名只取假名白名单词表文件、证件号 999999 段/电话 199 段占位段从词表文件读取）+ 真值 manifest 单一来源（expected_errors 与 planted_fields 同源生成）+ plan/04 §2 七类异常断言全覆盖（敏感抹除以"键不出现"口径锁定）+ CLI benchmark 子命令；覆盖度口径按异常类型写进 manifest 不写硬数字。pytest 47 项全绿（M4 新增 13 项），famarchive benchmark 复跑全绿 | plan/05 M4 DoD 逐项达成 |
+| 2026-10-14 | **M5 交付收尾**：search.py 组合查询（字段/人物/时间/媒体类型 AND 语义，Query 条件全可选）+ exporter.py 白名单导出包（K13 抹除=键不出现，白名单驱动循环、sensitive_fields 防御性再排除）+ manifest 记 profile/白名单版本与导出时间并写 export_manifests 表 + CLI search/export 子命令 + GUI 检索页/导出页补齐（五页全链路）+ PyInstaller 单文件 exe（数据文件内嵌 famarchive_data/，resources.py sys._MEIPASS 分支；修复 gui.py QApplication.setWindowTitle 误用）+ sha256 留档 plan/DIST-sha256-M5.txt。exe 内验证：profile/benchmark/import→search→export→gui 启动全通过。pytest 57 项全绿（M5 新增 10 项），GUI offscreen 全链路冒烟通过 | plan/05 M5 DoD 逐项达成 |
 
 ## 承诺-证据台账
 
@@ -55,5 +56,5 @@
 | M2 导入解析 | 模块 1：混合媒体导入、指纹去重、EXIF 预填 | 无 EXIF 文件走同一路径；断言通过。**✅ 2026-10-14 完成**（21 项测试全绿：重复指纹拒绝、K5 EXIF 只进建议、无 EXIF 同路径、缩略图、批量导入） |
 | M3 著录规则 | 模块 2/3：profile 校验器、录入表单、人物/年表 | 校验规则逐条标出处；profile 版本化。**✅ 2026-10-14 完成**（34 项测试全绿：三类规则逐条出处、W3CDTF、同名不自动合并、年表拦截未编目项、v0.2.0↔v0.1.0 必填集实质可区分；CLI+GUI 三页端到端冒烟通过） |
 | M4 基准 | 模块 5：合成生成器 + 真值 manifest + 断言（含覆盖度口径） | 断言复跑通过；覆盖各异常类型不偏科。**✅ 2026-10-14 完成**（47 项测试全绿：生成器假名/占位段纪律、真值单一来源、七类异常逐类断言、覆盖度口径进 manifest；`famarchive benchmark` 复跑全绿） |
-| M5 交付 | 模块 4 导出白名单 + PyInstaller exe + CLI | exe 内全链路可达；导出抹除断言通过 |
+| M5 交付 | 模块 4 导出白名单 + PyInstaller exe + CLI | exe 内全链路可达；导出抹除断言通过。**✅ 2026-10-14 完成**（57 项测试全绿：组合查询 AND 语义、导出 manifest 版本留痕、K13 敏感键不出现；exe 全链路验证 import→search→export→gui 通过；sha256 留档 plan/DIST-sha256-M5.txt） |
 | M6 发布 | 发布 GitHub 公开仓库 | **三件套：git tag + GitHub Release 附产物（本地留副本 sha256 留档）+ plan/RELEASE-M6.md 发布留档**，缺任一即未达成 |

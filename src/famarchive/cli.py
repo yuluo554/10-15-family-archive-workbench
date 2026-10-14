@@ -61,8 +61,22 @@ def build_parser() -> argparse.ArgumentParser:
 
     p_gui = sub.add_parser("gui", help="启动桌面 GUI（编目/人物/年表三页；需 .[gui]）")
     p_gui.add_argument("--db", default=None, help="SQLite 库路径")
-    sub.add_parser("search", help="字段/人物/时间/媒体类型组合检索（M5 实装）")
-    sub.add_parser("export", help="按白名单导出档案包（M5 实装）")
+    p_search = sub.add_parser("search", help="字段/人物/时间/媒体类型组合检索（M5 实装）")
+    p_search.add_argument("--db", default=None, help="SQLite 库路径")
+    p_search.add_argument("--text", default=None, help="全字段模糊关键词")
+    p_search.add_argument("--field", default=None, help="指定著录字段名（配合 --value；单独给=只筛有此字段的条目）")
+    p_search.add_argument("--value", default=None, help="字段取值模糊匹配（不配 --field 时按全字段匹配）")
+    p_search.add_argument("--person", default=None, help="人物姓名或 person_id")
+    p_search.add_argument("--date-from", default=None, help="起始日期（含，W3CDTF）")
+    p_search.add_argument("--date-to", default=None, help="结束日期（含，W3CDTF）")
+    p_search.add_argument("--media-type", default=None, help="媒体类型过滤")
+
+    p_export = sub.add_parser("export", help="按白名单导出档案包（M5 实装）")
+    p_export.add_argument("out", help="导出 JSON 文件路径")
+    p_export.add_argument("--db", default=None, help="SQLite 库路径")
+    p_export.add_argument("--whitelist", default=None, help="白名单 YAML（默认随包数据文件）")
+    p_export.add_argument("--item", action="append", default=None, help="只导出指定条目（可重复；默认全部）")
+
     sub.add_parser("benchmark", help="合成样例基准断言（M4 实装）")
 
     p_profile = sub.add_parser("profile", help="查看著录 profile")
@@ -234,6 +248,62 @@ def _cmd_gui(args: argparse.Namespace) -> int:
     return run_gui(str(_db_path_or_default(args.db)))
 
 
+def _cmd_search(args: argparse.Namespace) -> int:
+    from famarchive.search import Query, search
+    from famarchive.store import Store
+
+    query = Query(
+        text=args.text,
+        field_name=args.field,
+        field_value=args.value,
+        person=args.person,
+        date_from=args.date_from,
+        date_to=args.date_to,
+        media_type=args.media_type,
+    )
+    store = Store(_db_path_or_default(args.db))
+    try:
+        results = search(store, query)
+        cond = "、".join(
+            f"{k}={v}" for k, v in {
+                "关键词": args.text, "字段": args.field, "取值": args.value,
+                "人物": args.person, "起": args.date_from, "止": args.date_to,
+                "媒体类型": args.media_type,
+            }.items() if v
+        ) or "无条件（全部条目）"
+        print(f"检索条件：{cond}；命中 {len(results)} 件：")
+        for r in results:
+            f = r["fields"]
+            print(f"  {r['item_id']}  {f.get('title') or '（无标题）'}  "
+                  f"{f.get('date') or '—'}  {r['media_type']}  "
+                  f"人物：{'、'.join(r['persons']) or '—'}")
+        return 0
+    finally:
+        store.close()
+
+
+def _cmd_export(args: argparse.Namespace) -> int:
+    from famarchive.exporter import export_package
+    from famarchive.store import Store
+
+    profile = load_profile()
+    store = Store(_db_path_or_default(args.db))
+    try:
+        manifest = export_package(
+            store, args.out, profile,
+            whitelist_path=args.whitelist,
+            item_ids=args.item,
+        )
+        print(f"导出完成 {args.out}")
+        print(f"  export_id={manifest['export_id']}  条目 {manifest['item_count']} 件")
+        print(f"  profile v{manifest['profile_version']}  白名单 v{manifest['whitelist_version']}  "
+              f"导出时间 {manifest['exported_at']}")
+        print(f"  抹除字段（导出文件中键不出现）：{'、'.join(manifest['erased_fields'])}")
+        return 0
+    finally:
+        store.close()
+
+
 def _cmd_benchmark(args: argparse.Namespace) -> int:
     from famarchive.benchmark import run_benchmark
 
@@ -274,6 +344,10 @@ def main(argv: list[str] | None = None) -> int:
         return _cmd_timeline(args)
     if args.command == "gui":
         return _cmd_gui(args)
+    if args.command == "search":
+        return _cmd_search(args)
+    if args.command == "export":
+        return _cmd_export(args)
     if args.command == "benchmark":
         return _cmd_benchmark(args)
     if args.command == "profile":

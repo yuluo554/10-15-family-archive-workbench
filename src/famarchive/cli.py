@@ -44,9 +44,23 @@ def build_parser() -> argparse.ArgumentParser:
         help="媒体类型（photo-scan/photo-reprint/letter/document/id-card，见 media-type.yaml）",
     )
 
-    sub.add_parser("validate", help="按 DCMI profile 校验著录字段（M3 实装）")
-    sub.add_parser("persons", help="人物索引与代际关系（M3 实装）")
-    sub.add_parser("timeline", help="家庭年表视图（M3 实装）")
+    p_validate = sub.add_parser("validate", help="按 DCMI profile 校验著录字段（M3 实装）")
+    p_validate.add_argument("--db", default=None, help="SQLite 库路径（默认 ./archive.sqlite3）")
+    p_validate.add_argument("--item", default=None, help="只校验指定档案项（默认全部）")
+    p_validate.add_argument("--save-history", action="store_true", help="把当前 profile 版本登记进 profile_history")
+
+    p_persons = sub.add_parser("persons", help="人物索引与代际关系（M3 实装）")
+    p_persons.add_argument("--db", default=None, help="SQLite 库路径")
+    p_persons.add_argument("--add", nargs=2, metavar=("NAME", "RELATION"), help="新增人物")
+    p_persons.add_argument("--link", nargs=3, metavar=("PERSON", "ITEM", "ROLE"), help="人物↔档案项链接")
+    p_persons.add_argument("--relation", nargs=3, metavar=("FROM", "TO", "TYPE"), help="添加关系边（词表约束）")
+    p_persons.add_argument("--merge", nargs=2, metavar=("KEEP", "DROP"), help="同名人工确认合并")
+
+    p_timeline = sub.add_parser("timeline", help="家庭年表视图（M3 实装）")
+    p_timeline.add_argument("--db", default=None, help="SQLite 库路径")
+
+    p_gui = sub.add_parser("gui", help="启动桌面 GUI（编目/人物/年表三页；需 .[gui]）")
+    p_gui.add_argument("--db", default=None, help="SQLite 库路径")
     sub.add_parser("search", help="字段/人物/时间/媒体类型组合检索（M5 实装）")
     sub.add_parser("export", help="按白名单导出档案包（M5 实装）")
     sub.add_parser("benchmark", help="合成样例基准断言（M4 实装）")
@@ -100,12 +114,140 @@ def _cmd_import(args: argparse.Namespace) -> int:
         store.close()
 
 
+def _db_path_or_default(db_arg: str | None):
+    from pathlib import Path
+
+    return Path(db_arg) if db_arg else Path("archive.sqlite3")
+
+
+def _cmd_validate(args: argparse.Namespace) -> int:
+    from datetime import datetime, timezone
+
+    from famarchive.store import Store
+    from famarchive.validator import validate
+
+    profile = load_profile()
+    store = Store(_db_path_or_default(args.db))
+    try:
+        if args.save_history:
+            store.record_profile_version(
+                version=profile["version"],
+                based_on=profile["based_on"],
+                recorded_at=datetime.now(timezone.utc).isoformat(timespec="seconds"),
+            )
+        items = store.list_items()
+        if args.item:
+            item = store.get_item(args.item)
+            items = [item] if item else []
+        if not items:
+            print("库内无档案项，无可校验对象")
+            return 0
+        exit_code = 0
+        for item in items:
+            fields = store.get_metadata_fields(item["item_id"])
+            results = validate(fields, profile)
+            print(f"{item['item_id']}  {item['file_name']}  著录字段 {len(fields)} 项")
+            if not fields:
+                print("  （未编目：必填字段全部缺失）")
+            for r in results:
+                print(f"  [{r['severity']}] {r['rule_id']} {r['field']}: {r['message']}")
+                print(f"      出处: {r['source']}")
+            if any(r["severity"] == "error" for r in results) or not fields:
+                exit_code = 1
+        return exit_code
+    finally:
+        store.close()
+
+
+def _cmd_persons(args: argparse.Namespace) -> int:
+    import uuid
+
+    from famarchive.persons import find_same_name_persons, load_relation_type_ids
+    from famarchive.store import Store
+
+    store = Store(_db_path_or_default(args.db))
+    try:
+        if args.add:
+            name, relation = args.add
+            person = store.add_person(
+                person_id=f"person-{uuid.uuid4().hex[:8]}",
+                name=name,
+                relation=None if relation == "-" else relation,
+            )
+            print(f"已登记人物 {person['person_id']}  {person['name']}")
+        if args.link:
+            pid, item_id, role = args.link
+            store.link_person_item(pid, item_id, None if role == "-" else role)
+            print(f"已链接 {pid} ↔ {item_id}（role={role}）")
+        if args.relation:
+            frm, to, rtype = args.relation
+            allowed = load_relation_type_ids()
+            if rtype not in allowed:
+                print(
+                    f"relation_type {rtype!r} 不在 relation-type 词表内（允许 {sorted(allowed)}）",
+                    file=sys.stderr,
+                )
+                return 2
+            store.add_relation(frm, to, rtype)
+            print(f"已添加关系 {frm} → {to} : {rtype}")
+        if args.merge:
+            keep, drop = args.merge
+            store.confirm_same_name_merge(keep, drop)
+            print(f"同名合并完成：{drop} → {keep}")
+
+        # 默认动作：列出人物索引与同名报告
+        persons = store.list_persons()
+        print(f"人物 {len(persons)} 人：")
+        for p in persons:
+            print(f"  {p['person_id']}  {p['name']}" + (f"（{p['relation']}）" if p["relation"] else ""))
+        groups = find_same_name_persons(store)
+        if groups:
+            print("同名待人工确认（不自动合并）：")
+            for g in groups:
+                ids = " / ".join(p["person_id"] for p in g)
+                print(f"  [{g[0]['name']}] {ids}")
+        return 0
+    finally:
+        store.close()
+
+
+def _cmd_timeline(args: argparse.Namespace) -> int:
+    from famarchive.persons import build_timeline
+    from famarchive.store import Store
+
+    profile = load_profile()
+    store = Store(_db_path_or_default(args.db))
+    try:
+        events = build_timeline(store, profile)
+        print(f"家庭年表（编目完成 {len(events)} 件 / 库内 {store.count('archive_items')} 件）：")
+        for ev in events:
+            persons = "、".join(ev["persons"]) or "—"
+            print(f"  {ev['date']}  {ev['title'] or '（无标题）'}  人物：{persons}  [{ev['item_id']}]")
+        return 0
+    finally:
+        store.close()
+
+
+def _cmd_gui(args: argparse.Namespace) -> int:
+    from famarchive.gui import run_gui
+
+    return run_gui(str(_db_path_or_default(args.db)))
+
+
 def main(argv: list[str] | None = None) -> int:
     _ensure_utf8_stdio()
     parser = build_parser()
     args = parser.parse_args(argv)
     if args.command == "import":
         return _cmd_import(args)
+    if args.command == "validate":
+        return _cmd_validate(args)
+    if args.command == "persons":
+        return _cmd_persons(args)
+    if args.command == "timeline":
+        return _cmd_timeline(args)
+    if args.command == "gui":
+        return _cmd_gui(args)
     if args.command == "profile":
         if args.profile_command == "show":
             return _cmd_profile(args)

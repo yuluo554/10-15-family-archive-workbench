@@ -1,9 +1,14 @@
-# DCMI 家庭档案著录 profile — v0.1.0-draft
+# DCMI 家庭档案著录 profile — v0.2.0
 # 单一事实来源：校验器只读本文件，规则不硬编码（plan/02 §2）。
 # 每条规则必须带 source；无出处的规则加载即报错（确定性纪律）。
 # 必填集/受控词表为项目自建，非 DCMI 标准原文规定。
+#
+# v0.2.0 实质变更（K6 版本化承诺，plan/02 §2.4）：
+# - description、coverage 从可选提升为必填（家庭档案描述与地点是检索/年表核心维度）；
+# - 新增 REQ-DESCRIPTION / REQ-COVERAGE 规则（均挂项目自建出处）；
+# - v0.1.0-draft 全文留档 data/profiles/archived/，两版本必填集实质可区分。
 profile_id: dcmi-family-profile
-version: 0.1.0-draft
+version: 0.2.0
 based_on: DCMI Metadata Terms 2020-01-20（对应 ISO 15836-1:2017/-2:2019）
 based_on_status: ✅ 已核对（data/README.md #1）
 
@@ -20,7 +25,7 @@ fields:
   - name: description
     dcmi_term: dcterms:description
     label: 描述
-    required: false
+    required: true
   - name: type
     dcmi_term: dcterms:type
     label: 媒体类型
@@ -33,7 +38,7 @@ fields:
   - name: coverage
     dcmi_term: dcterms:coverage
     label: 地点
-    required: false
+    required: true
   - name: language
     dcmi_term: dcterms:language
     label: 语言
@@ -59,10 +64,21 @@ rules:
     type: required
     severity: error
     source: 项目自建必填集（基于 DCMI Terms dcterms:type）
+  - id: REQ-DESCRIPTION
+    field: description
+    type: required
+    severity: error
+    source: 项目自建必填集 v0.2.0（基于 DCMI Terms dcterms:description；家庭档案描述为核心检索维度）
+  - id: REQ-COVERAGE
+    field: coverage
+    type: required
+    severity: error
+    source: 项目自建必填集 v0.2.0（基于 DCMI Terms dcterms:coverage；地点为年表/检索核心维度）
   - id: VOC-TYPE
     field: type
     type: vocabulary
     severity: error
+    vocab_source: media-type
     source: DCMI Type 词汇（data/vocabularies/media-type.yaml 挂出处）
   - id: FMT-DATE
     field: date

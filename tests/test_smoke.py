@@ -33,7 +33,7 @@ def test_cli_help_smoke(capsys):
 def test_profile_loads_with_version_and_sources():
     profile = load_profile()
     assert profile["profile_id"] == "dcmi-family-profile"
-    assert profile["version"].startswith("0.1.0")
+    assert profile["version"].startswith("0.2.0")
     for rule in profile["rules"]:
         assert rule["source"], f"规则 {rule['id']} 缺出处"
 

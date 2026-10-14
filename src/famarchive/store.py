@@ -188,3 +188,150 @@ class Store:
         }:
             raise ValueError(f"未知表名: {table}")
         return self._conn.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0]
+
+    # ---- persons / person_item_links / person_relations（M3） -------------
+
+    def add_person(self, *, person_id: str, name: str, relation: str | None = None) -> dict:
+        """登记人物。同名人物**不自动合并**：允许并存，合并须走显式 confirm_same_name。"""
+        with self._conn:
+            self._conn.execute(
+                "INSERT INTO persons (person_id, name, relation) VALUES (?, ?, ?)",
+                (person_id, name, relation),
+            )
+        return self.get_person(person_id)  # type: ignore[return-value]
+
+    def get_person(self, person_id: str) -> dict | None:
+        row = self._conn.execute(
+            "SELECT * FROM persons WHERE person_id = ?", (person_id,)
+        ).fetchone()
+        return dict(row) if row else None
+
+    def list_persons(self) -> list[dict]:
+        return [
+            dict(r)
+            for r in self._conn.execute("SELECT * FROM persons ORDER BY person_id")
+        ]
+
+    def find_persons_by_name(self, name: str) -> list[dict]:
+        """同名人物查询（可能有多个——同名合并必须人工确认，不自动）。"""
+        return [
+            dict(r)
+            for r in self._conn.execute(
+                "SELECT * FROM persons WHERE name = ? ORDER BY person_id", (name,)
+            )
+        ]
+
+    def update_person_name(self, person_id: str, name: str) -> None:
+        with self._conn:
+            self._conn.execute(
+                "UPDATE persons SET name = ? WHERE person_id = ?", (name, person_id)
+            )
+
+    def confirm_same_name_merge(self, keep_id: str, drop_id: str) -> None:
+        """同名人工确认后的合并：把 drop 的人物与其链接/关系并进 keep 后删除 drop。
+
+        只能由人工确认路径调用（GUI/CLI 显式动作），任何自动流程不得调用。
+        """
+        with self._conn:
+            self._conn.execute(
+                "UPDATE OR IGNORE person_item_links SET person_id = ? WHERE person_id = ?",
+                (keep_id, drop_id),
+            )
+            self._conn.execute(
+                "DELETE FROM person_item_links WHERE person_id = ?", (drop_id,)
+            )
+            self._conn.execute(
+                "UPDATE OR IGNORE person_relations SET from_person = ? WHERE from_person = ?",
+                (keep_id, drop_id),
+            )
+            self._conn.execute(
+                "UPDATE OR IGNORE person_relations SET to_person = ? WHERE to_person = ?",
+                (keep_id, drop_id),
+            )
+            self._conn.execute(
+                "DELETE FROM person_relations WHERE from_person = ? AND to_person = ?",
+                (keep_id, keep_id),
+            )
+            self._conn.execute(
+                "DELETE FROM person_relations WHERE from_person = ? OR to_person = ?",
+                (drop_id, drop_id),
+            )
+            self._conn.execute("DELETE FROM persons WHERE person_id = ?", (drop_id,))
+
+    def link_person_item(
+        self, person_id: str, item_id: str, link_role: str | None = None
+    ) -> None:
+        with self._conn:
+            self._conn.execute(
+                """INSERT INTO person_item_links (person_id, item_id, link_role)
+                   VALUES (?, ?, ?)
+                   ON CONFLICT(person_id, item_id)
+                   DO UPDATE SET link_role = excluded.link_role""",
+                (person_id, item_id, link_role),
+            )
+
+    def unlink_person_item(self, person_id: str, item_id: str) -> None:
+        with self._conn:
+            self._conn.execute(
+                "DELETE FROM person_item_links WHERE person_id = ? AND item_id = ?",
+                (person_id, item_id),
+            )
+
+    def list_items_for_person(self, person_id: str) -> list[dict]:
+        return [
+            dict(r)
+            for r in self._conn.execute(
+                """SELECT ai.*, pil.link_role FROM person_item_links pil
+                   JOIN archive_items ai ON ai.item_id = pil.item_id
+                   WHERE pil.person_id = ?
+                   ORDER BY ai.imported_at, ai.item_id""",
+                (person_id,),
+            )
+        ]
+
+    def add_relation(
+        self, from_person: str, to_person: str, relation_type: str
+    ) -> None:
+        """关系边：relation_type 取值限 relation-type 词表（调用方校验）。"""
+        with self._conn:
+            self._conn.execute(
+                """INSERT INTO person_relations (from_person, to_person, relation_type)
+                   VALUES (?, ?, ?)
+                   ON CONFLICT(from_person, to_person)
+                   DO UPDATE SET relation_type = excluded.relation_type""",
+                (from_person, to_person, relation_type),
+            )
+
+    def remove_relation(self, from_person: str, to_person: str) -> None:
+        with self._conn:
+            self._conn.execute(
+                "DELETE FROM person_relations WHERE from_person = ? AND to_person = ?",
+                (from_person, to_person),
+            )
+
+    def list_relations(self) -> list[dict]:
+        return [
+            dict(r)
+            for r in self._conn.execute(
+                "SELECT * FROM person_relations ORDER BY from_person, to_person"
+            )
+        ]
+
+    # ---- profile_history（M3 版本化登记） ----------------------------------
+
+    def record_profile_version(self, *, version: str, based_on: str | None, recorded_at: str) -> None:
+        with self._conn:
+            self._conn.execute(
+                """INSERT INTO profile_history (version, based_on, recorded_at)
+                   VALUES (?, ?, ?)
+                   ON CONFLICT(version) DO NOTHING""",
+                (version, based_on, recorded_at),
+            )
+
+    def list_profile_history(self) -> list[dict]:
+        return [
+            dict(r)
+            for r in self._conn.execute(
+                "SELECT * FROM profile_history ORDER BY recorded_at, version"
+            )
+        ]

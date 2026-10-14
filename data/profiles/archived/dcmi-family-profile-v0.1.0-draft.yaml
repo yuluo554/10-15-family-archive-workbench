@@ -1,0 +1,71 @@
+# DCMI 家庭档案著录 profile — v0.1.0-draft
+# 单一事实来源：校验器只读本文件，规则不硬编码（plan/02 §2）。
+# 每条规则必须带 source；无出处的规则加载即报错（确定性纪律）。
+# 必填集/受控词表为项目自建，非 DCMI 标准原文规定。
+profile_id: dcmi-family-profile
+version: 0.1.0-draft
+based_on: DCMI Metadata Terms 2020-01-20（对应 ISO 15836-1:2017/-2:2019）
+based_on_status: ✅ 已核对（data/README.md #1）
+
+fields:
+  - name: title
+    dcmi_term: dcterms:title
+    label: 标题
+    required: true
+  - name: date
+    dcmi_term: dcterms:date
+    label: 时间
+    required: true
+    format: W3CDTF
+  - name: description
+    dcmi_term: dcterms:description
+    label: 描述
+    required: false
+  - name: type
+    dcmi_term: dcterms:type
+    label: 媒体类型
+    required: true
+    vocabulary: media-type
+  - name: subject
+    dcmi_term: dcterms:subject
+    label: 人物关键词
+    required: false
+  - name: coverage
+    dcmi_term: dcterms:coverage
+    label: 地点
+    required: false
+  - name: language
+    dcmi_term: dcterms:language
+    label: 语言
+    required: false
+  - name: rights
+    dcmi_term: dcterms:rights
+    label: 权利
+    required: false
+
+rules:
+  - id: REQ-TITLE
+    field: title
+    type: required
+    severity: error
+    source: 项目自建必填集（基于 DCMI Terms dcterms:title）
+  - id: REQ-DATE
+    field: date
+    type: required
+    severity: error
+    source: 项目自建必填集（基于 DCMI Terms dcterms:date）
+  - id: REQ-TYPE
+    field: type
+    type: required
+    severity: error
+    source: 项目自建必填集（基于 DCMI Terms dcterms:type）
+  - id: VOC-TYPE
+    field: type
+    type: vocabulary
+    severity: error
+    source: DCMI Type 词汇（data/vocabularies/media-type.yaml 挂出处）
+  - id: FMT-DATE
+    field: date
+    type: format
+    severity: error
+    source: DCMI W3CDTF 语法编码方案（dcmi-terms §encoding-scheme）

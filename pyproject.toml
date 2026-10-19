@@ -1,14 +1,15 @@
 [build-system]
-requires = ["setuptools>=68"]
+requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "famarchive"
-version = "0.1.0.dev0"
+version = "0.1.1"
 description = "老照片/家庭档案数字化整理工作台 —— 人工元数据编目优先，DCMI-based 字段体系，纯本地单机零上传"
 readme = "README.md"
-requires-python = ">=3.10"
-license = { file = "LICENSE" }
+requires-python = ">=3.12"
+license = "MIT"
+license-files = ["LICENSE"]
 authors = [{ name = "yuluo554" }]
 keywords = ["family-archive", "dublin-core", "metadata", "cataloging", "photo-archive"]
 classifiers = [
@@ -17,7 +18,7 @@ classifiers = [
   "Intended Audience :: End Users/Desktop",
   "Natural Language :: Chinese (Simplified)",
   "Operating System :: OS Independent",
-  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.12",
   "Topic :: Multimedia :: Graphics",
 ]
 dependencies = [
@@ -44,3 +45,6 @@ famarchive = ["data/**/*.yaml"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+markers = [
+  "packaging: 构建 wheel 并安装到全新 venv 后跑 CLI（需网络；CI 由专门 packaging job 跑 -m packaging）",
+]

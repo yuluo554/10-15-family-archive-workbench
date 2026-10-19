@@ -6,16 +6,16 @@
 ## 1. 当前进度与证据
 
 - **M3 全部收尾**：
-  - `validator.py`：profile 驱动三类规则校验——required（必填缺失，空白串也算缺）/ vocabulary（词表越界，按 `vocab_source` 读 data/vocabularies/ 数据文件）/ format（W3CDTF：YYYY / YYYY-MM / YYYY-MM-DD / 带时区 datetime，**含日历语义检查**，`1963-13`、`1963/05/02` 均拒绝）。结果逐条 `{rule_id, field, severity, message, source}`（K1 出处透出）。规则不硬编码：自造 profile 文件也能驱动校验（测试锁定）。
+  - `validator.py`：profile 驱动三类规则校验——required（必填缺失，空白串也算缺）/ vocabulary（词表越界，按 `vocab_source` 读 src/famarchive/data/vocabularies/ 数据文件）/ format（W3CDTF：YYYY / YYYY-MM / YYYY-MM-DD / 带时区 datetime，**含日历语义检查**，`1963-13`、`1963/05/02` 均拒绝）。结果逐条 `{rule_id, field, severity, message, source}`（K1 出处透出）。规则不硬编码：自造 profile 文件也能驱动校验（测试锁定）。
   - `persons.py` + `store.py`：`add_relation_checked` 关系边限 relation-type 词表（越界 ValueError）；`find_same_name_persons` 同名**只报告不合并**，合并必须走显式 `store.confirm_same_name_merge`（链接与关系边随迁、自环清理）；`build_timeline` 年表只收编目完成项（必填齐 + 零 error，按 date 升序）。
   - GUI 三页实装（`famarchive gui --db` 启动）：编目页（profile 驱动表单、逐字段校验提示挂出处、EXIF 建议仅点"采纳"进表单且仍须过校验保存——K5 唯一写入路径）/ 人物页（索引、词表下拉关系边、同名合并确认对话框）/ 年表页（只显编目完成项）。PySide6 6.12.0 已装入 venv，offscreen 冒烟三页全链路通过（校验拦截→修正→保存落库→同名合并→年表刷新）。
   - CLI 四子命令：`validate`（无 error 才 exit 0，`--save-history` 登记 profile_history）、`persons`（--add/--link/--relation/--merge）、`timeline`、`gui`。
-  - profile **v0.2.0**：description、coverage 由可选提升必填（新增 REQ-DESCRIPTION/REQ-COVERAGE 挂项目自建出处；VOC-TYPE 补 `vocab_source: media-type` 键——vocabulary 规则校验器按此读词表）；v0.1.0-draft 全文留档 `data/profiles/archived/dcmi-family-profile-v0.1.0-draft.yaml`，两版本必填集实质可区分（K6，测试锁定）。
+  - profile **v0.2.0**：description、coverage 由可选提升必填（新增 REQ-DESCRIPTION/REQ-COVERAGE 挂项目自建出处；VOC-TYPE 补 `vocab_source: media-type` 键——vocabulary 规则校验器按此读词表）；v0.1.0-draft 全文留档 `src/famarchive/data/profiles/archived/dcmi-family-profile-v0.1.0-draft.yaml`，两版本必填集实质可区分（K6，测试锁定）。
 - 证据：`pytest` **34 passed**（M2 后 21 + M3 新增 13：三类规则逐条出处断言 / W3CDTF 合法非法形态表 / 自造 profile 驱动 / 关系词表越界拒绝 / 同名不自动合并 / 年表拦截未编目项 / v0.2.0↔v0.1.0 必填集可区分 / profile_history 登记）。CLI 端到端冒烟（导入 2 件 → 一件编目全 → validate 拦截另一件含出处错误行 → 人物/链接/关系词表拒绝 → 年表只出 1 件）通过。
 
 ## 2. 下一里程碑待办（M4 基准，plan/04 §2）
 
-- [ ] `benchmark.py`：合成样例生成器（人名只从 `data/vocabularies/假名白名单.yaml` 取，证件号 999999 段、电话 199 段）+ 真值 manifest 单一来源
+- [ ] `benchmark.py`：合成样例生成器（人名只从 `src/famarchive/data/vocabularies/假名白名单.yaml` 取，证件号 999999 段、电话 199 段）+ 真值 manifest 单一来源
 - [ ] 断言清单按 plan/04 §2 七类异常类型全覆盖（缺失/越界/格式/重复/敏感字段/同名/未编目——以 plan/04 实际清单为准）
 - [ ] CLI `benchmark` 子命令实装（现为占位桩）
 - [ ] DoD：`pytest` + `famarchive benchmark` 复跑通过；覆盖度口径进 manifest

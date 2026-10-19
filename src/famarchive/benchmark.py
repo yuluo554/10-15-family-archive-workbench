@@ -1,7 +1,7 @@
 """模块 5：合成档案测试样例与内置基准 —— M4 实装（plan/04）。
 
 纪律（data/README.md 第三节 + plan/04 §1）：
-- 人物姓名只取 data/vocabularies/假名白名单.yaml；证件号 999999 占位段、
+- 人物姓名只取 src/famarchive/data/vocabularies/假名白名单.yaml；证件号 999999 占位段、
   电话 19900000000 假号段；禁止真实人名/证件号/地址入样例；
 - 真值单一来源：生成器一次产出「植入字段 + 期望校验结果 + 覆盖度口径」，
   manifest 不手写第二份口径（断言只消费生成结果，不自带期望值）；
@@ -146,7 +146,7 @@ def generate_samples() -> dict:
     return {
         "manifest_version": "0.1.0",
         "generator": "famarchive.benchmark.generate_samples",
-        "profile_version_source": "data/profiles/dcmi-family-profile.yaml",
+        "profile_version_source": "src/famarchive/data/profiles/dcmi-family-profile.yaml",
         "fake_name_whitelist": names,
         "placeholders": placeholders,
         "samples": samples,

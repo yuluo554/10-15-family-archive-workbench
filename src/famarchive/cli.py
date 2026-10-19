@@ -59,7 +59,7 @@ def build_parser() -> argparse.ArgumentParser:
     p_timeline = sub.add_parser("timeline", help="家庭年表视图（M3 实装）")
     p_timeline.add_argument("--db", default=None, help="SQLite 库路径")
 
-    p_gui = sub.add_parser("gui", help="启动桌面 GUI（编目/人物/年表三页；需 .[gui]）")
+    p_gui = sub.add_parser("gui", help="启动桌面 GUI（编目/人物/年表/检索/导出五页；需 .[gui]）")
     p_gui.add_argument("--db", default=None, help="SQLite 库路径")
     p_search = sub.add_parser("search", help="字段/人物/时间/媒体类型组合检索（M5 实装）")
     p_search.add_argument("--db", default=None, help="SQLite 库路径")

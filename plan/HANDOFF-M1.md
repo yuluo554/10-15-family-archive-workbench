@@ -12,7 +12,7 @@
 ## 2. 下一里程碑待办（M1 数据先行，plan/05）
 
 - [ ] DCMI terms 页面快照 + RDF（dublin_core_terms.nt）下载落库 `data/raw/dcmi/`（官方直连可得，状态 ✅）
-- [ ] 从 RDF 提取 DCMI Type 词汇 → `data/vocabularies/dcmi-type.yaml`（挂出处；脚本转写禁手抄）
+- [ ] 从 RDF 提取 DCMI Type 词汇 → `src/famarchive/data/vocabularies/dcmi-type.yaml`（挂出处；脚本转写禁手抄）
 - [ ] GB/T 11821-2002 预览人工落地 `data/raw/gbt11821/`（阻断时如实记录 pending，不硬卡后续里程碑）
 - [ ] PIPL 第 6/28/29 条国家法律法规数据库核对 → data/README.md 台账回填
 - [ ] DoD：每条引用规则挂原文出处；未核对（⬜）不落库不进计算路径
@@ -21,7 +21,7 @@
 
 - **K1 profile 规则出处强制**：`profile.py` 加载器对缺 `source` 的规则抛 ValueError（`test_profile_rejects_rule_without_source` 锁死）；新规则必须带出处。
 - **K2 必备键集**：profile 必备键 = `profile_id / version / based_on / rules`，规则必备键 = `id / field / type / severity / source`，规则类型枚举 = `required / vocabulary / format`——改口径须同步 loader + 测试 + plan/02 三处。
-- **K3 词表文件名**：`data/vocabularies/{media-type,relation-type,假名白名单}.yaml`，测试 `test_data_files_present` 按名断言——改名须同步测试。
+- **K3 词表文件名**：`src/famarchive/data/vocabularies/{media-type,relation-type,假名白名单}.yaml`，测试 `test_data_files_present` 按名断言——改名须同步测试。
 - **K4 抹除语义**：白名单外字段导出时**不出现**（非置空）——M5 exporter 实装时不得偏离。
 - **K5 EXIF 纪律**：EXIF 只进预填建议，永不自动写入著录字段。
 - **K6 版本化承诺**：profile v0.2.0 必须与 v0.1.0 必填/可选集实质可区分（M3 DoD）。

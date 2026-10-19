@@ -7,7 +7,7 @@
 
 - **M4 全部收尾**：
   - `benchmark.py` 实装（原占位桩删除）：
-    - **合成样例生成器** `generate_samples()`：6 件样例（baseline-full / missing-required / vocabulary-out / bad-date-format / sensitive-carry / uncatalogued），每类 plan/04 §2 异常至少一件（不偏科）；人名只取 `data/vocabularies/假名白名单.yaml` 的 names，证件号 999999 段、电话 199 段**占位段从词表文件读取**（`load_fake_name_whitelist`/`load_fake_placeholders`，不硬编码第二份）；
+    - **合成样例生成器** `generate_samples()`：6 件样例（baseline-full / missing-required / vocabulary-out / bad-date-format / sensitive-carry / uncatalogued），每类 plan/04 §2 异常至少一件（不偏科）；人名只取 `src/famarchive/data/vocabularies/假名白名单.yaml` 的 names，证件号 999999 段、电话 199 段**占位段从词表文件读取**（`load_fake_name_whitelist`/`load_fake_placeholders`，不硬编码第二份）；
     - **真值单一来源**：manifest 里 `expected_errors` 与 `planted_fields` 由同一次生成推导产出（缺失样例必触发 REQ-*、基线零 error、bad-date 只触发 FMT-DATE 均测试锁定"非手抄"）；断言函数只消费生成结果，不自带期望值；
     - **断言** `ASSERTIONS` 七类（必填缺失/词表外取值/W3CDTF非法日期/敏感字段抹除/人物关系/指纹去重/EXIF纪律），CLI 与 pytest 共用同一实现（`run_benchmark()`，断言失败抛 AssertionError 转逐类 fail 行 + exit 1）；
     - **敏感抹除口径**：manifest `sensitive_export_plan` 登记 exported=False 的键（gps/id-number/phone/biometric），断言"键不出现于著录字段"+ 携带值落占位段；导出器 M5 落地后可直接消费此口径断言导出文件。
@@ -18,7 +18,7 @@
 ## 2. 下一里程碑待办（M5 交付，plan/05）
 
 - [ ] `search.py`（现为骨架）：组合查询（字段/人物/时间/媒体类型）
-- [ ] `exporter.py`（现为占位桩）：白名单导出包（`data/export-whitelist.yaml` v0.1.0-draft）+ manifest；**抹除=字段不出现，非置空**；断言消费 benchmark 的 sensitive_export_plan 口径
+- [ ] `exporter.py`（现为占位桩）：白名单导出包（`src/famarchive/data/export-whitelist.yaml` v0.1.0-draft）+ manifest；**抹除=字段不出现，非置空**；断言消费 benchmark 的 sensitive_export_plan 口径
 - [ ] GUI 检索页/导出页补齐，全链路 GUI 可达
 - [ ] CLI `search`/`export` 子命令实装（现为占位桩，main() 走"尚未实装"分支）
 - [ ] PyInstaller 打包 Windows exe（数据文件内嵌，`resources.py` 已有 sys._MEIPASS 分支），sha256 留档

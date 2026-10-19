@@ -12,13 +12,14 @@
 家庭档案的主食恰是无 EXIF 的扫描件。本工具以人工编目为核心：
 
 - **混合媒体导入**：照片扫描件/翻拍/家书/文献/证件同一录入路径；EXIF 仅作预填建议，永不自动写入；SHA-256 指纹防重复入库；
-# DCMI-based 著录 profile（核心）：字段定义、必填集、受控词表、W3CDTF 日期校验全部以数据文件定义，逐条规则标注出处，profile 带版本号可版本化；
-
+- **DCMI-based 著录 profile（核心）**：字段定义、必填集、受控词表、W3CDTF 日期校验全部以数据文件定义，逐条规则标注出处，profile 带版本号可版本化；
 - **人物与家庭年表**：代际关系边（受控词表）、同名人工确认合并、按编目时间轴生成年表；
 - **白名单导出**：默认抹除 GPS/证件号类敏感字段（抹除 = 不出现，非置空），导出包附 manifest；
 - **内置基准**：合成样例带真值（假名白名单），断言可复跑。
 
 ## 快速开始
+
+需要 Python ≥ 3.12（`requires-python` 口径）。
 
 ```bash
 py -m venv .venv                    # Windows；其他系统 python3 -m venv .venv
@@ -29,7 +30,9 @@ famarchive --help                   # CLI
 famarchive profile show             # 查看著录 profile 与规则出处
 ```
 
-可选 extras：`.[gui]` PySide6 桌面界面（开发中）、`.[pack]` PyInstaller 打包、`.[exif]` EXIF 辅助预填。
+可选 extras：`.[gui]` PySide6 桌面界面（五页：编目/人物/年表/检索/导出）、`.[pack]` PyInstaller 打包、`.[exif]` EXIF 辅助预填。
+
+> 规则数据（profile/词表/白名单）随包分发：`pip install .`（非 editable）同样可用，`famarchive profile show` / `benchmark` 无需仓库 `data/`；CI 有 `packaging` 守门复核该形态。
 
 | 子命令 | 说明 | 状态 |
 |---|---|---|
@@ -37,15 +40,16 @@ famarchive profile show             # 查看著录 profile 与规则出处
 | `validate` | 著录字段校验 | ✅（M3） |
 | `persons` / `timeline` | 人物与年表 | ✅（M3） |
 | `benchmark` | 合成样例基准断言复跑 | ✅（M4） |
-| `search` / `export` | 检索与白名单导出 | 开发中（M5） |
+| `search` / `export` | 检索与白名单导出 | ✅（M5） |
 | `profile show` | profile 版本与规则出处 | ✅ |
 
 ## 仓库结构
 
 - `src/famarchive/` 核心库（CLI 与 GUI 共用，无网络依赖）
-- `data/profiles/` DCMI 著录 profile（版本化）
-- `data/vocabularies/` 受控词表（媒体类型/关系边/假名白名单）
-- `data/export-whitelist.yaml` 导出字段白名单
+- `src/famarchive/data/profiles/` DCMI 著录 profile（版本化）
+- `src/famarchive/data/vocabularies/` 受控词表（媒体类型/关系边/假名白名单）
+- `src/famarchive/data/export-whitelist.yaml` 导出字段白名单
+- `data/raw/dcmi/` DCMI 公开参考快照（RDF/HTML，仓库侧资料，不随包分发）
 - `data/README.md` 依据查证台账（标准条文三态核对记录）
 - `plan/` 题目、设计与里程碑文档
 

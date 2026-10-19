@@ -17,14 +17,14 @@
 - [ ] `validator.py`：profile 驱动的必填/词表/W3CDTF 校验，逐条挂出处（结果结构 `{rule_id, field, severity, message, source}`，见 plan/02 §4；W3CDTF = YYYY / YYYY-MM / YYYY-MM-DD / 带时区 datetime）
 - [ ] `persons.py`：人物标注、关系边（取值限 relation-type 词表）、同名人工确认、家庭年表
 - [ ] GUI 编目页/人物页/年表页（PySide6，可选依赖 `.[gui]`）
-- [ ] profile v0.2.0 实质变更演示：必填/可选集与 v0.1.0 **实质可区分**（K6），历史版本进 `data/profiles/archived/`
+- [ ] profile v0.2.0 实质变更演示：必填/可选集与 v0.1.0 **实质可区分**（K6），历史版本进 `src/famarchive/data/profiles/archived/`
 - [ ] DoD：校验规则逐条标出处；profile 版本化成立
 
 ## 3. 既定口径清单（动了会打挂测试）
 
 - **K1 profile 规则出处强制**：`profile.py` 对缺 `source` 的规则抛 ValueError（`test_profile_rejects_rule_without_source` 锁死）；新规则必须带出处。
 - **K2 必备键集**：profile 必备键 = `profile_id / version / based_on / rules`，规则必备键 = `id / field / type / severity / source`，规则类型枚举 = `required / vocabulary / format`——改口径须同步 loader + 测试 + plan/02 三处。
-- **K3 词表文件名**：`data/vocabularies/{media-type,relation-type,假名白名单,dcmi-type}.yaml`，测试按名断言——改名须同步测试；dcmi-type.yaml 改内容须改 `scripts/extract_dcmi_type.py` 重跑（禁手抄）。
+- **K3 词表文件名**：`src/famarchive/data/vocabularies/{media-type,relation-type,假名白名单,dcmi-type}.yaml`，测试按名断言——改名须同步测试；dcmi-type.yaml 改内容须改 `scripts/extract_dcmi_type.py` 重跑（禁手抄）。
 - **K4 抹除语义**：白名单外字段导出时**不出现**（非置空）——M5 exporter 实装时不得偏离。
 - **K5 EXIF 纪律（M2 已实装锁定）**：`test_exif_goes_to_suggestions_only` 断言导入后 `metadata_fields` 表 0 行；后续任何路径（含 GUI 预填）都只能把建议值经**人工确认**后写入著录字段。
 - **K6 版本化承诺**：profile v0.2.0 必须与 v0.1.0 必填/可选集实质可区分（M3 DoD）。
@@ -47,7 +47,7 @@
 - [ ] `validator.py`：校验结果逐条含 `{rule_id, field, severity, message, source}`；必填缺失/词表越界/W3CDTF 格式三类规则全部可触发并被测试锁定
 - [ ] `persons.py`：人物标注 + 关系边限 relation-type 词表 + 同名人工确认路径 + 家庭年表
 - [ ] GUI 三页（编目/人物/年表）可达（CLI 全链路先行可用，GUI 按 plan/05 增量补齐）
-- [ ] profile v0.2.0：与 v0.1.0 必填/可选集实质可区分；旧版进 `data/profiles/archived/`
+- [ ] profile v0.2.0：与 v0.1.0 必填/可选集实质可区分；旧版进 `src/famarchive/data/profiles/archived/`
 - [ ] 收尾：pytest 复跑全绿 → plan/00/05 状态回写 → **写 plan/HANDOFF-M4.md（本对话内，先落盘再结束）** → commit
 
 ## 6. 关键命令速查

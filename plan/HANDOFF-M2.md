@@ -7,7 +7,7 @@
 
 - **M1 全部收尾**：
   - DCMI 快照落库 `data/raw/dcmi/`（dublin_core_terms.nt/.ttl、dctype.ttl/.rdf、2 份 HTML 页面快照）；RDF 经 dublincore.org 主站直连 + DCMI 官方 GitHub `dcmi/vocabtool` build/ 镜像取得；许可 **CC-BY 4.0** 已登记 data/README.md。
-  - `data/vocabularies/dcmi-type.yaml`：DCMI Type 12 词条（Collection/Dataset/Event/Image/InteractiveResource/MovingImage/PhysicalObject/Service/Software/Sound/StillImage/Text），由 `scripts/extract_dcmi_type.py` 从 dctype.ttl **脚本转写**（禁手抄纪律），每词条挂 purl URI + issued/modified/history 出处；namespace modified 2012-06-14。
+  - `src/famarchive/data/vocabularies/dcmi-type.yaml`：DCMI Type 12 词条（Collection/Dataset/Event/Image/InteractiveResource/MovingImage/PhysicalObject/Service/Software/Sound/StillImage/Text），由 `scripts/extract_dcmi_type.py` 从 dctype.ttl **脚本转写**（禁手抄纪律），每词条挂 purl URI + issued/modified/history 出处；namespace modified 2012-06-14。
   - GB/T 11821-2002：openstd 在线预览逐页图抓取通路**已实测破解**（`scripts/fetch_gbt11821.py`；关键点：showGb 须带 newGbInfo 的 Referer，否则 302 回详情页；每页有独立防爬令牌；页面图仅作人工核对底稿，不 OCR）。执行期触发服务端**站点级封锁**——showGb 请求现被 302 重定向至网信办《个人信息保护合规审计管理办法》新闻页（拦截页，冷却 5–15 分钟均不恢复，非限流是封锁）。**不阻断后续里程碑**：封锁解除或换网络环境后重跑脚本即可全本落库。
   - PIPL 第 6/28/29 条：flk.npc.gov.cn 检索 API 实测须过**人机验证码**（无头脚本不可行），转人工浏览器核对；台账获取路径已回填；核对前不引用条文原文口径不变。
 - 证据：`pytest -v` **9 passed**（原 7 项烟囱 + 新增 `test_dcmi_type_vocabulary_extracted_with_sources`、`test_dcmi_raw_snapshot_registered` 两项 M1 锁定）。
@@ -24,7 +24,7 @@
 
 - **K1 profile 规则出处强制**：`profile.py` 加载器对缺 `source` 的规则抛 ValueError（`test_profile_rejects_rule_without_source` 锁死）；新规则必须带出处。
 - **K2 必备键集**：profile 必备键 = `profile_id / version / based_on / rules`，规则必备键 = `id / field / type / severity / source`，规则类型枚举 = `required / vocabulary / format`——改口径须同步 loader + 测试 + plan/02 三处。
-- **K3 词表文件名**：`data/vocabularies/{media-type,relation-type,假名白名单}.yaml`，测试 `test_data_files_present` 按名断言——改名须同步测试。**M1 新增第 4 份：`dcmi-type.yaml`**（12 词条、锁定测试 `test_dcmi_type_vocabulary_extracted_with_sources`；改词表内容须改 `scripts/extract_dcmi_type.py` 重跑，禁手抄）。
+- **K3 词表文件名**：`src/famarchive/data/vocabularies/{media-type,relation-type,假名白名单}.yaml`，测试 `test_data_files_present` 按名断言——改名须同步测试。**M1 新增第 4 份：`dcmi-type.yaml`**（12 词条、锁定测试 `test_dcmi_type_vocabulary_extracted_with_sources`；改词表内容须改 `scripts/extract_dcmi_type.py` 重跑，禁手抄）。
 - **K4 抹除语义**：白名单外字段导出时**不出现**（非置空）——M5 exporter 实装时不得偏离。
 - **K5 EXIF 纪律**：EXIF 只进预填建议，永不自动写入著录字段（M2 就是实装点）。
 - **K6 版本化承诺**：profile v0.2.0 必须与 v0.1.0 必填/可选集实质可区分（M3 DoD）。

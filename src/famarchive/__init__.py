@@ -4,4 +4,4 @@
 业务逻辑全部在本核心库；CLI 与 PySide6 GUI 调用同一函数。
 """
 
-__version__ = "0.1.0.dev0"
+__version__ = "0.1.1"

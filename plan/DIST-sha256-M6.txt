@@ -1,4 +1,6 @@
 # M6 发布产物 sha256（v0.1.0，2026-10-14）
+# 注（2026-10-19 二次迭代）：产物本身未变，三条 sha256 仍有效；仅修正发行物版本口径——
+#   pyproject/__version__ 已由 0.1.0.dev0 统一为 0.1.0，与 tag v0.1.0 一致。
 b67228c529f496e42647bc35320ac1042ad78138e81835f47e1b0cd7e2fab986 famarchive.exe（与 DIST-sha256-M5.txt 一致）
 871caef9ca38d8eb42bdc5b67eb76a49747c42b7a60c09c08ba0c7174052a8ac src-v0.1.0.zip（git archive HEAD 源码包）
 ecf3de931ae865050e26f7ef28465b887371212c6c30cd2dd8beb84db316f2a4 famarchive-v0.1.0-win64-src.zip（Release 附件 = exe + 源码包）

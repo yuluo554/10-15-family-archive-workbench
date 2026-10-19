@@ -19,7 +19,7 @@
 ### 2.1 文件布局
 
 ```
-data/profiles/
+src/famarchive/data/profiles/
 ├── dcmi-family-profile.yaml        # 当前生效 profile（单一事实来源）
 └── archived/                        # 历史版本留档（仅追加，不改历史）
 ```
@@ -52,7 +52,7 @@ rules:
 ### 2.3 受控词表（数据文件，与 profile 分离可复用）
 
 ```
-data/vocabularies/
+src/famarchive/data/vocabularies/
 ├── dcmi-type.yaml          # DCMI Type 词汇（从落库 RDF 提取，挂出处）
 ├── media-type.yaml         # 本项目媒体类型：photo-scan/letter/document/id-card/reprint
 ├── relation-type.yaml      # 模块 3 关系边类型：parent-child/spouse/grandparent-grandchild/sibling/other
@@ -86,7 +86,7 @@ data/vocabularies/
 ## 5. 导出白名单文件（模块 4）
 
 ```
-data/export-whitelist.yaml
+src/famarchive/data/export-whitelist.yaml
 ```
 
 - 白名单以数据文件定义、可审计；默认**排除** GPS、证件号类敏感字段（抹除 = 导出文件中字段不出现，而非置空）；
@@ -96,7 +96,7 @@ data/export-whitelist.yaml
 
 | DoD 项 | 本设计的落点 |
 |---|---|
-| DCMI terms/RDF 落库 | `data/raw/dcmi/` 下载 + vocabularies/dcmi-type.yaml 提取 |
+| DCMI terms/RDF 落库 | `data/raw/dcmi/` 下载 + `src/famarchive/data/vocabularies/dcmi-type.yaml` 提取 |
 | GB/T 11821 全文获取落地 | data/raw/gbt11821/（人工预览落地） |
 | 依据台账三态回填 | data/README.md 表格更新 |
 | 每条引用规则挂原文出处 | profile rules[].source 字段 |

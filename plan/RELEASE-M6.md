@@ -31,3 +31,9 @@
 - pytest 57 passed（发布前复跑确认）；CI 远端 4 矩阵同绿。
 - 提交元数据核验口径：`git log --format="%ae %ce" --all` 应仅 noreply（M0 整改沿用）。
 - M6 为收官里程碑，无下一阶段 HANDOFF；后续如有用户新需求再立新档。
+
+## 5. 发布后补记（二次迭代，2026-10-19）
+
+- **D1 修正（"干净环境"口径收窄）**：本文件 §1 所称"干净环境"验证在**非 editable** 语义下并不成立——当时所有验证（CI 的 `python -m pip install -e .[dev]`、本地对照）**全部跑在 editable 安装上**，而 wheel 因 `package-data` 指向不存在的 `src/famarchive/data/` 而**零规则数据**，`pip install <whl>` 后 `famarchive profile show` / `benchmark` **裸 traceback（exit 1）**。二次迭代已把规则数据迁入包内并加 `packaging` 守门（详见 plan/00 决策记录 2026-10-19 行、plan/HANDOFF-M6 §4）。**§1 表内"pytest 57 passed（CI 环境实测）"仅代表源码/editable 态结论，不代表安装态结论。**
+- **产物指纹不变**：本迭代**不重打包、不动 tag `v0.1.0`（→693448d）与 Release 附件**；`dist/famarchive.exe` sha256 仍 `b67228c529f4…fab986`，release zip 仍 `ecf3de93…16f2a4`。
+- **版本口径修正**：发行物自称 `0.1.0.dev0` 而 tag 为 `v0.1.0` 的不一致，已在二次迭代统一为 `0.1.0`（详见 plan/DIST-sha256-M6.txt 首行与 plan/00）。

@@ -8,17 +8,15 @@
 
 from __future__ import annotations
 
-from pathlib import Path
-
 import pytest
 
 from famarchive.persons import add_relation_checked, build_timeline
 from famarchive.profile import load_profile
+from famarchive.resources import profiles_dir
 from famarchive.store import Store
 from famarchive.validator import is_valid_w3cdtf, validate
 
-REPO_DATA = Path(__file__).resolve().parents[1] / "data"
-ARCHIVED_V010 = REPO_DATA / "profiles" / "archived" / "dcmi-family-profile-v0.1.0-draft.yaml"
+ARCHIVED_V010 = profiles_dir() / "archived" / "dcmi-family-profile-v0.1.0-draft.yaml"
 
 
 @pytest.fixture()
@@ -199,7 +197,7 @@ def test_profile_version_bumped_with_substantive_change():
 
 
 def test_archived_v010_exists_and_is_distinguishable():
-    assert ARCHIVED_V010.exists(), "v0.1.0 未留档 data/profiles/archived/"
+    assert ARCHIVED_V010.exists(), "v0.1.0 未留档 src/famarchive/data/profiles/archived/"
     old = load_profile(ARCHIVED_V010)
     assert old["version"] == "0.1.0-draft"
     new = load_profile()

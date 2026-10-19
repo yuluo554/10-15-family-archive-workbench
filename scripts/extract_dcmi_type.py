@@ -1,4 +1,4 @@
-"""从 dctype.ttl 提取 DCMI Type 词汇 → data/vocabularies/dcmi-type.yaml。
+"""从 dctype.ttl 提取 DCMI Type 词汇 → src/famarchive/data/vocabularies/dcmi-type.yaml。
 
 纪律：脚本转写禁手抄（plan/05 M1）——词表内容一律由本脚本从
 data/raw/dcmi/dctype.ttl（DCMI 官方 GitHub dcmi/vocabtool build/dctype.ttl）
@@ -16,7 +16,7 @@ import yaml
 
 REPO = Path(__file__).resolve().parents[1]
 TTL_PATH = REPO / "data" / "raw" / "dcmi" / "dctype.ttl"
-OUT_PATH = REPO / "data" / "vocabularies" / "dcmi-type.yaml"
+OUT_PATH = REPO / "src" / "famarchive" / "data" / "vocabularies" / "dcmi-type.yaml"
 
 
 def parse_ttl_blocks(text: str) -> list[dict]:

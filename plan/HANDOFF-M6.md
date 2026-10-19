@@ -7,10 +7,10 @@
 
 - **M5 全部收尾**：
   - `search.py` 实装（原骨架桩删除）：`Query` dataclass 条件全可选（text/field_name+field_value/person/date_from+date_to/media_type/ids），`search(store, query)` 组合查询 AND 语义；关键词全字段模糊、指定字段按名匹配、人物按姓名或 person_id（同名全部并入）、W3CDTF 前缀截齐字典序比较时间范围；结果附著录字段与关联人物名。
-  - `exporter.py` 实装（原占位桩删除）：`load_whitelist()` 读 data/export-whitelist.yaml（v0.1.0-draft，缺必备键报错）；`export_package()` 白名单驱动序列化循环（白名单外键根本不进循环）+ sensitive_fields **防御性再排除**（K13：抹除=键不出现，非置空）；manifest 记 profile v0.2.0 / 白名单版本 / 导出时间 / erased_fields / item_count，留痕写 `export_manifests` 表；支持 `item_ids` 子集导出。
+  - `exporter.py` 实装（原占位桩删除）：`load_whitelist()` 读 src/famarchive/data/export-whitelist.yaml（v0.1.0-draft，缺必备键报错）；`export_package()` 白名单驱动序列化循环（白名单外键根本不进循环）+ sensitive_fields **防御性再排除**（K13：抹除=键不出现，非置空）；manifest 记 profile v0.2.0 / 白名单版本 / 导出时间 / erased_fields / item_count，留痕写 `export_manifests` 表；支持 `item_ids` 子集导出。
   - CLI `search` / `export` 子命令实装（search：--text/--field/--value/--person/--date-from/--date-to/--media-type；export：位置参数 out + --whitelist + 可重复 --item）；main() 不再有"尚未实装"分支（全部子命令可达）。
   - GUI 五页补齐：新增 search_page.py（profile 驱动字段下拉+条件表单+结果表）、export_page.py（白名单/抹除字段展示+导出+manifest 预览）；gui.py 挂检索/导出两页为五页全链路；**修复 `run_gui` 里 `QApplication.setWindowTitle` 误用**（脚本模式死代码未暴露，exe 内首跑即崩，已删）。
-  - PyInstaller 打包：`famarchive.spec` 单文件 exe（Analysis datas 把 data/profiles、data/vocabularies、export-whitelist.yaml 内嵌 `famarchive_data/`，hiddenimports collect_submodules('famarchive')）；`resources.data_dir()` 已有 sys._MEIPASS 分支无需改动；exe 56.6 MB。sha256 留档 `plan/DIST-sha256-M5.txt`（`b67228c529f4…fab986`）。
+  - PyInstaller 打包：`famarchive.spec` 单文件 exe（Analysis datas 把 `src/famarchive/data/profiles`、`src/famarchive/data/vocabularies`、`src/famarchive/data/export-whitelist.yaml` 内嵌 `famarchive_data/`，hiddenimports collect_submodules('famarchive')）；`resources.data_dir()` 已有 sys._MEIPASS 分支无需改动；exe 56.6 MB。sha256 留档 `plan/DIST-sha256-M5.txt`（`b67228c529f4…fab986`）。
 - 证据：`pytest` **57 passed**（M4 后 47 + M5 新增 10：组合查询 AND 语义/人物/时间范围/字段值/空查询、白名单加载、K13 敏感键不出现、manifest 版本留痕+export_manifests 表、子集导出）。GUI offscreen 全链路冒烟通过（编目→人物→年表→检索关键词/人物→导出抹除）。**exe 内全链路实测**：`profile show`（读内嵌 profile v0.2.0）、`benchmark` 七类全过、`import`→`search`→`export`（manifest erased_fields 正确）→ `gui` 启动成功。
 
 ## 2. 下一里程碑待办（M6 发布，plan/05）
@@ -35,11 +35,12 @@
 - **Git Bash `/tmp` 与 Windows Python 路径不一致**——临时文件放项目内目录（如 `.smoke/`，用完即删，别提交；`.smoke/` 已在本次收尾删除）。benchmark/测试内部一律 `tempfile.TemporaryDirectory()` 或 pytest `tmp_path`。
 - **Bash 工具每次调用后工作目录不保证回到项目根**（本对话实测多次 `cd .smoke` 后下一条命令仍在 .smoke 报 127）——每条命令开头显式 `cd /d/ProgramData/zcode/10-15-family-archive-workbench`。
 - **exe 管道输出中文显示乱码**（Git Bash 管道下 cp936 解码 UTF-8 字节）：`_ensure_utf8_stdio` 已把 stdio 重配为 UTF-8，字节正确，仅 Git Bash 终端按 cp936 显示乱；结构化验证（读导出 JSON、grep 关键英文段）不受影响，勿据此改编码逻辑。
-- PyInstaller 6.22.3 已装入 venv；**famarchive.spec 在 .gitignore（`*.spec`）内不入库**——M6 若需可复现打包，spec 内容已摘录进本节（Analysis datas 三项 + hiddenimports collect_submodules('famarchive') + EXE 单文件 console=True）；重新打包命令 `.venv/Scripts/python -m PyInstaller famarchive.spec --noconfirm`，产物 dist/famarchive.exe。
+- PyInstaller 6.22.3 已装入 venv；**famarchive.spec 现已入库**（二次迭代 DEC3=A：`.gitignore` 加 `!famarchive.spec`）。此前 `*.spec` 屏蔽致 spec 未跟踪，本节旧"摘录"只是散文摘要（**缺 `pathex=['src']`**、`noarchive/upx/excludes` 等），按摘要重建能否成功**未验证**——现以仓内 `famarchive.spec` 为唯一可复现来源（datas 三项的**源路径**已随二次迭代批次 1 迁为 `src/famarchive/data/...`，目标目录 `famarchive_data/` 不变，exe 行为不变）。重新打包命令 `.venv/Scripts/python -m PyInstaller famarchive.spec --noconfirm`，产物 dist/famarchive.exe。
 - **dist/、build/ 均 gitignore**：exe 本体不入 git，发布走 GitHub Release 附产物 + 本地留副本。
 - GUI 无头冒烟用 `QT_QPA_PLATFORM=offscreen`（QFontDatabase 字体目录警告、propagateSizeHints 警告均可忽略）；**给 `run_gui` 做非阻塞冒烟**用 `QtWidgets.QApplication.exec = lambda *a, **k: 0` 打补丁后调用（exe 内 GUI 冒烟则后台起进程 + `tasklist //FI "IMAGENAME eq famarchive.exe"` 确认 + `taskkill //IM famarchive.exe //F`）。
 - pillow 12.3.0、PySide6 6.12.0、PyInstaller 6.22.3 已装入 venv。
 - 网络坑（M1 实测，M2–M5 无新增）：purl.archive.org 阻断走 dublincore.org + api.github.com；openstd 站点级封锁勿重试；flk 验证码死路。**M6 首推 GitHub 时注意 api.github.com 可用、git push 走正常远端。**
+- **二次迭代实测（2026-10-19）：非 editable 安装曾整条坏掉（缺陷 D1）**——`package-data` 指向**不存在的** `src/famarchive/data/`（数据在仓库根 `data/`，包外），`resources.data_dir()` 的 `parents[2]` 在 site-packages 下**越界到 `<venv>\Lib`** → wheel 零数据文件、装后 `profile show`/`benchmark` **裸 traceback（exit 1）**；而 CI 的 `pip install -e .` 与仓内所有"干净环境验证"**全部因 editable 假绿**。修法：规则数据 `git mv` 进 `src/famarchive/data/`（随 wheel/sdist 分发），`resources.data_dir()` 改包内相对 `Path(__file__).parent/"data"`（**保留 `sys._MEIPASS` 分支，exe 行为不变**），并新增 `tests/test_packaging.py`（wheel → 全新 venv → 装 → CLI 冒烟，标记 `packaging`；负控已验：还原 `parents[2]` 即红）。**今后任何"能不能用"的验收必须在「中立目录 + 全新 venv + 装 wheel」下做，不能复用 `.venv`、不能 `cd` 进仓库根。**
 
 ## 5. DoD 逐项 checklist（M6）
 
@@ -53,7 +54,9 @@
 
 ```bash
 cd <项目根>                                            # 仓库根（用户侧拼绝对路径）
-.venv/Scripts/python -m pytest -v                      # 全量测试（M5 后 57 项）
+.venv/Scripts/python -m pytest -v                      # 全量测试（M5 后 57 + 二次迭代 packaging 5 = 62 项）
+.venv/Scripts/python -m pytest -m "not packaging"      # 源码态测试（CI test job 同口径，deselect packaging）
+.venv/Scripts/python -m pytest -m packaging            # 非 editable 安装守门（wheel→全新 venv→装→CLI 冒烟）
 .venv/Scripts/famarchive.exe benchmark                 # 独立复跑基准（七类断言 + 覆盖度输出；exit 1=有断言失败）
 .venv/Scripts/famarchive.exe import <文件或目录> --media-type photo-scan --db archive.sqlite3
 .venv/Scripts/famarchive.exe validate [--item ID] [--save-history] --db archive.sqlite3   # exit 0 = 全部无 error
@@ -63,7 +66,7 @@ cd <项目根>                                            # 仓库根（用户�
 .venv/Scripts/famarchive.exe export <out.json> --db archive.sqlite3 [--whitelist x.yaml] [--item ID]…   # 白名单导出包+manifest，留痕 export_manifests
 .venv/Scripts/famarchive.exe gui --db archive.sqlite3  # 桌面 GUI 五页（编目/人物/年表/检索/导出，需 .[gui]）
 .venv/Scripts/famarchive.exe profile show              # profile 版本与规则出处（现 v0.2.0）
-.venv/Scripts/python -m PyInstaller famarchive.spec --noconfirm   # 重新打包 exe（spec 不入库，内容见 HANDOFF §4）
+.venv/Scripts/python -m PyInstaller famarchive.spec --noconfirm   # 重新打包 exe（spec 已入库，datas 源路径见 spec 本体）
 sha256sum dist/famarchive.exe                          # 打包产物指纹核对
 QT_QPA_PLATFORM=offscreen .venv/Scripts/python -c "…"  # GUI 无头冒烟模式
 .venv/Scripts/python -m pip install -e .[exif,gui,pack,dev]       # 全可选依赖

@@ -1,0 +1,7 @@
+# sdist 内容补充（wheel 的数据文件已由 package-data 处理，这里管源码包）
+# exe 可复现的唯一来源（DEC3=A）：spec 必须随 sdist 分发，否则从 sdist 构建的
+# 用户拿不到打包脚本。
+include famarchive.spec
+include pyproject.toml
+include LICENSE
+include README.md

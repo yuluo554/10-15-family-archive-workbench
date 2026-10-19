@@ -14,6 +14,8 @@ from famarchive import resources
 from famarchive.cli import build_parser
 from famarchive.profile import load_profile
 
+# 仓库根 data/：仅存 DCMI 公开快照（raw/）与依据查证台账（README.md），不随包分发。
+# 规则数据（profile/词表/白名单）随包分发，经 famarchive.resources 定位。
 REPO_DATA = Path(__file__).resolve().parents[1] / "data"
 
 
@@ -51,24 +53,24 @@ def test_profile_rejects_rule_without_source(tmp_path):
 
 
 def test_data_files_present():
-    assert (REPO_DATA / "profiles" / "dcmi-family-profile.yaml").exists()
+    assert (resources.profiles_dir() / "dcmi-family-profile.yaml").exists()
     for name in ("media-type.yaml", "relation-type.yaml", "假名白名单.yaml"):
-        assert (REPO_DATA / "vocabularies" / name).exists()
-    assert (REPO_DATA / "export-whitelist.yaml").exists()
+        assert (resources.vocabularies_dir() / name).exists()
+    assert resources.export_whitelist_path().exists()
 
 
 def test_vocabularies_parse():
     for name in ("media-type.yaml", "relation-type.yaml"):
-        doc = yaml.safe_load((REPO_DATA / "vocabularies" / name).read_text(encoding="utf-8"))
+        doc = yaml.safe_load((resources.vocabularies_dir() / name).read_text(encoding="utf-8"))
         assert doc["values"]
-    whitelist = yaml.safe_load((REPO_DATA / "export-whitelist.yaml").read_text(encoding="utf-8"))
+    whitelist = yaml.safe_load(resources.export_whitelist_path().read_text(encoding="utf-8"))
     assert "gps" in whitelist["sensitive_fields"]
     assert "title" in whitelist["export_fields"]
 
 
 def test_dcmi_type_vocabulary_extracted_with_sources():
     """M1：dcmi-type.yaml 由脚本转写生成，12 词条全带 DCMI 出处（plan/05 M1 DoD）。"""
-    path = REPO_DATA / "vocabularies" / "dcmi-type.yaml"
+    path = resources.vocabularies_dir() / "dcmi-type.yaml"
     assert path.exists(), "dcmi-type.yaml 未生成：跑 scripts/extract_dcmi_type.py"
     doc = yaml.safe_load(path.read_text(encoding="utf-8"))
     assert doc["vocabulary_id"] == "dcmi-type"
@@ -88,7 +90,8 @@ def test_dcmi_type_vocabulary_extracted_with_sources():
 def test_dcmi_raw_snapshot_registered():
     """M1：DCMI 快照落库（HTML 页面 + RDF），来源/许可登记进 data/README.md。
 
-    data/raw/dcmi/ 在 .gitignore 例外中入库（公开参考资料，非隐私数据）。
+    data/raw/dcmi/ 在 .gitignore 例外中入库（公开参考资料，非隐私数据）；
+    raw/ 与台账 README.md 留在仓库根 data/，不随包分发。
     """
     raw = REPO_DATA / "raw" / "dcmi"
     for name in ("dublin_core_terms.nt", "dublin_core_terms.ttl", "dctype.ttl", "dctype.rdf"):

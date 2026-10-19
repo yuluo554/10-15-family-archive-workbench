@@ -1,0 +1,7 @@
+# v0.1.1 发布产物 sha256（二次迭代，2026-10-19）
+# 说明：本版为 v0.1.0 之后的二次迭代修复版，含 D1 实质缺陷修复（非 editable 安装
+#   读不到规则数据）。exe 已按入库 spec（datas 源路径 src/famarchive/data/...）重打，
+#   内嵌版本号 0.1.1，与 v0.1.0 产物指纹不同（属预期，v0.1.0 未重打）。
+dcc01a5d4750e4f1b6aaa67394308aa7b9c9d3404c3ebc8bbf0111f5cd8fb17d famarchive.exe（0.1.1，56647823 B；spec 重建，实跑 profile show/benchmark 通过）
+c9e2785e2b0d938d68492c6b2225bb3a52ed56cd4e28e336a19e8444ea30d39e src-v0.1.1.zip（git archive HEAD = ed2d85e 源码包，199963 B；含 famarchive.spec + MANIFEST.in + 规则数据）
+420deeced440b74359b06be2ef7c5136b30a2db65424318e6365ade7bce932ce famarchive-v0.1.1-win64-src.zip（Release 附件 = exe + 源码包，56464343 B）
